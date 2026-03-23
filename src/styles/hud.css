@@ -1,0 +1,19 @@
+.hud-title { position: absolute; top: 30px; left: 30px; }
+.hud-title h1 { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 900; letter-spacing: 0.2em; color: #fff; text-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff44; animation: glitchText 8s infinite; }
+.hud-title .tagline { font-size: 0.9rem; color: rgba(255,255,255,0.6); letter-spacing: 0.15em; margin-top: 4px; }
+.hud-audio { position: absolute; top: 30px; right: 30px; }
+.hud-audio button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; transition: background 0.2s; }
+.hud-audio button:hover { background: rgba(255,255,255,0.2); }
+.hud-nav { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; }
+.hud-nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.hud-nav button:hover:not(:disabled) { background: rgba(255,0,255,0.2); border-color: #ff00ff; }
+.hud-nav button:disabled { opacity: 0.2; cursor: default; }
+.hud-nav .nav-hint { font-size: 0.75rem; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; }
+.hud-progress { position: absolute; bottom: 30px; left: 30px; display: flex; gap: 10px; }
+.hud-progress .dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); background: transparent; transition: all 0.3s; }
+.hud-progress .dot.visited { background: #fff; border-color: #fff; }
+.hud-progress .dot.current { animation: dotPulse 1.5s infinite; }
+.hud-cta { position: absolute; bottom: 30px; right: 30px; }
+.hud-cta a { display: inline-block; padding: 10px 24px; background: linear-gradient(135deg, rgba(255,0,255,0.3), rgba(0,255,255,0.3)); border: 1px solid #ff00ff; color: #fff; text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; letter-spacing: 0.15em; border-radius: 4px; transition: all 0.3s; text-shadow: 0 0 10px #ff00ff; }
+.hud-cta a:hover { background: linear-gradient(135deg, rgba(255,0,255,0.5), rgba(0,255,255,0.5)); box-shadow: 0 0 20px rgba(255,0,255,0.3); }
+@keyframes dotPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.4); } }
