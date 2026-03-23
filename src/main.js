@@ -25,7 +25,10 @@ import { showFallback } from './ui/fallback.js';
 import { state } from './state/gameState.js';
 
 function isMobile() {
-  return window.innerWidth < 1024 || 'ontouchstart' in window;
+  // Only check viewport width — 'ontouchstart' is true on touch-enabled Windows desktops
+  const isSmallScreen = window.innerWidth < 1024;
+  const isActualMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  return isSmallScreen || isActualMobile;
 }
 
 function supportsWebGL() {
