@@ -3,13 +3,13 @@ export const state = {
   visitedStations: new Set(), modalOpen: false, modalNpcIndex: -1,
   activeNpcIndex: -1, finalCtaTriggered: false, finalCtaShown: false,
   audioPlaying: false, audioLoaded: false, sceneReady: false,
-  bloomStrength: 1.5, bloomRadius: 0.4, bloomThreshold: 0.8,
+  bloomStrength: 1.8, bloomRadius: 0.5, bloomThreshold: 0.4,
   mouse: { x: 0, y: 0 },
 };
 
 export const BLOOM_STATES = {
-  exploring: { bloomStrength: 1.5, bloomRadius: 0.4, bloomThreshold: 0.8 },
-  modal:     { bloomStrength: 2.0, bloomRadius: 0.4, bloomThreshold: 0.8 },
+  exploring: { bloomStrength: 1.8, bloomRadius: 0.5, bloomThreshold: 0.4 },
+  modal:     { bloomStrength: 2.2, bloomRadius: 0.5, bloomThreshold: 0.4 },
   finalCta:  { bloomStrength: 2.5, bloomRadius: 0.6, bloomThreshold: 0.6 },
 };
 

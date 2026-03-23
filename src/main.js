@@ -79,6 +79,7 @@ function init() {
   ground.initialCapture();
   state._npcHexColors = NPC_DATA.map(n => n.hexColor);
 
+
   const raycaster = new THREE.Raycaster();
   const clickMouse = new THREE.Vector2();
 
