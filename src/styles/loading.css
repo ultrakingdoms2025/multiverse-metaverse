@@ -1,0 +1,16 @@
+.loading-content { text-align: center; }
+.loading-title {
+  font-family: 'Orbitron', sans-serif; font-size: 3rem; font-weight: 900; letter-spacing: 0.3em;
+  color: #fff; text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff55; animation: glitchText 8s infinite;
+}
+.loading-bar-container { width: 300px; height: 4px; background: rgba(255,255,255,0.1); margin-top: 2rem; border-radius: 2px; overflow: hidden; }
+.loading-bar { height: 100%; width: 0%; border-radius: 2px; background: linear-gradient(90deg, #ff00ff, #00ffff); box-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff55; transition: width 0.3s ease; }
+#loading-screen.fade-out { opacity: 0; transition: opacity 0.8s ease; pointer-events: none; }
+@keyframes glitchText {
+  0%, 90%, 100% { clip-path: inset(0); transform: translateX(0); }
+  91% { clip-path: inset(20% 0 40% 0); transform: translateX(-5px); }
+  92% { clip-path: inset(60% 0 10% 0); transform: translateX(5px); }
+  93% { clip-path: inset(0); transform: translateX(0); }
+  94% { clip-path: inset(40% 0 30% 0); transform: translateX(3px); }
+  95% { clip-path: inset(0); transform: translateX(0); }
+}
