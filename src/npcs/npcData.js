@@ -1,0 +1,21 @@
+import * as THREE from 'three';
+export const NPC_DATA = [
+  { name: 'The Architect', color: new THREE.Color(0x00ffff), hexColor: '#00ffff', stationIndex: 0, visualType: 'blueprint',
+    quote: '\u201CI designed the bridges between worlds. Each realm is a living dimension \u2014 its own physics, its own rules, its own dangers. The Nexus binds them together, and from it, infinite paths diverge.\u201D',
+    features: ['Procedurally generated realms with unique biomes and physics rules', 'Persistent world state \u2014 your actions reshape the multiverse', 'Discover hidden rifts connecting secret dimensions'] },
+  { name: 'The Broker', color: new THREE.Color(0xffaa00), hexColor: '#ffaa00', stationIndex: 1, visualType: 'ticker',
+    quote: '\u201CEverything has a price in the Nexus. Rare alloys from the Ember Wastes, data crystals from the Neon Spires \u2014 I move it all. Smart traders build empires.\u201D',
+    features: ['Cross-realm trading economy driven by supply and demand', 'Craft legendary gear from materials found across dimensions', 'Player-run marketplaces and auction houses'] },
+  { name: 'The Warden', color: new THREE.Color(0xff0044), hexColor: '#ff0044', stationIndex: 2, visualType: 'combat',
+    quote: '\u201CThe arenas don\u2019t care where you\u2019re from. Step through the gate and prove yourself. Solo duels, faction wars, realm sieges \u2014 there\u2019s always someone who needs to be put down.\u201D',
+    features: ['Skill-based combat with deep ability customization', 'PvP arenas, ranked ladders, and seasonal tournaments', 'Large-scale realm siege warfare (50v50)'] },
+  { name: 'The Navigator', color: new THREE.Color(0x4488ff), hexColor: '#4488ff', stationIndex: 3, visualType: 'portal',
+    quote: '\u201CMost people see walls between dimensions. I see doors. The Riftwalker\u2019s gift lets us slip between worlds \u2014 each one stranger and more beautiful than the last.\u201D',
+    features: ['Seamless realm transitions through dimensional portals', 'Open-world exploration with verticality and hidden areas', 'Dynamic events that alter the landscape in real-time'] },
+  { name: 'The Syndicate Boss', color: new THREE.Color(0xaa00ff), hexColor: '#aa00ff', stationIndex: 4, visualType: 'faction',
+    quote: '\u201CPower isn\u2019t taken alone. My syndicate controls three realms and counting. We protect our own, crush our enemies, and split the profits.\u201D',
+    features: ['Create or join factions with territory control', 'Guild halls, shared resources, and faction progression', 'Political alliances and betrayals shape the multiverse'] },
+  { name: 'The Oracle', color: new THREE.Color(0x00ffaa), hexColor: '#00ffaa', stationIndex: 5, visualType: 'timeline',
+    quote: '\u201CI see the threads of what\u2019s coming. New realms forming in the void. The multiverse is expanding, and you can be there from the beginning.\u201D',
+    features: ['Early access beta launching soon', 'Regular content drops: new realms, abilities, and events', 'Community-driven development \u2014 your feedback shapes the game'] },
+];
