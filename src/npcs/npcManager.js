@@ -27,23 +27,54 @@ export function createNpcManager(scene, spline) {
     }));
     orbitPts.frustumCulled = false;
     scene.add(orbitPts);
+    // Name label sprite (hidden by default, shown on hover)
+    const nameCanvas = document.createElement('canvas');
+    nameCanvas.width = 512; nameCanvas.height = 64;
+    const nameCtx = nameCanvas.getContext('2d');
+    nameCtx.font = 'bold 28px monospace';
+    nameCtx.textAlign = 'center';
+    const hex = data.hexColor;
+    nameCtx.fillStyle = hex;
+    nameCtx.fillText(data.name, 256, 42);
+    const nameTex = new THREE.CanvasTexture(nameCanvas);
+    const nameSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: nameTex, transparent: true, opacity: 0, depthWrite: false }));
+    nameSprite.position.y = 2.8;
+    nameSprite.scale.set(3, 0.4, 1);
+    group.add(nameSprite);
+
     npcPositions.push(npcPos.clone().setY(1.5));
     hitSpheres.push(hitSphere);
-    npcs.push({ group, material, baseY: npcPos.y, orbitGeo, orbitCount, orbitCenter: npcPos.clone() });
+    npcs.push({ group, material, baseY: npcPos.y, orbitGeo, orbitCount, orbitCenter: npcPos.clone(), nameSprite, hovered: false, hoverGlow: 0 });
   });
 
   function update(time, dt, currentT) {
     state.activeNpcIndex = getActiveStation(currentT);
     npcs.forEach((npc, i) => {
-      npc.group.position.y = npc.baseY + Math.sin(time * (Math.PI * 2 / 3) + i) * 0.1;
-      const target = (i === state.activeNpcIndex) ? 1.0 : 0.5;
+      // Idle bob — smooth floating motion
+      const bobSpeed = 0.8 + i * 0.1;
+      const bobAmount = 0.15 + Math.sin(time * 0.5 + i) * 0.05;
+      npc.group.position.y = npc.baseY + Math.sin(time * bobSpeed + i * 1.2) * bobAmount;
+
+      // Idle rotation — slow spin when not facing camera
+      const isActive = i === state.activeNpcIndex;
+      const target = isActive ? 1.0 : 0.5;
       const cur = npc.material.uniforms.uEmissiveMultiplier.value;
       npc.material.uniforms.uEmissiveMultiplier.value += (target - cur) * Math.min(dt * 4, 1);
       npc.material.uniforms.uTime.value = time;
-      if (i === state.activeNpcIndex && !state.isTransitioning && state._cameraPosition) {
+
+      if (isActive && !state.isTransitioning && state._cameraPosition) {
+        // Face camera when active
         const look = state._cameraPosition.clone(); look.y = npc.group.position.y;
         const tmp = new THREE.Object3D(); tmp.position.copy(npc.group.position); tmp.lookAt(look);
         npc.group.quaternion.slerp(tmp.quaternion, Math.min(dt * 6, 1));
+      } else {
+        // Slow idle spin when inactive
+        npc.group.rotation.y += dt * 0.4;
+      }
+
+      // Hologram flicker — brief emissive spikes
+      if (Math.random() < 0.005) {
+        npc.material.uniforms.uEmissiveMultiplier.value = 2.5;
       }
       const arr = npc.orbitGeo.attributes.position.array;
       for (let j = 0; j < npc.orbitCount; j++) {
@@ -54,7 +85,20 @@ export function createNpcManager(scene, spline) {
         arr[j * 3 + 2] = npc.orbitCenter.z + Math.sin(angle) * r;
       }
       npc.orbitGeo.attributes.position.needsUpdate = true;
+
+      // Hover effect — fade name label and boost glow
+      const targetHover = npc.hovered ? 1.0 : 0.0;
+      npc.hoverGlow += (targetHover - npc.hoverGlow) * Math.min(dt * 8, 1);
+      npc.nameSprite.material.opacity = npc.hoverGlow;
+      if (npc.hovered) {
+        npc.material.uniforms.uEmissiveMultiplier.value = Math.max(npc.material.uniforms.uEmissiveMultiplier.value, 1.5 + npc.hoverGlow * 0.5);
+      }
     });
   }
-  return { npcs, npcPositions, hitSpheres, update };
+
+  function setHovered(index) {
+    npcs.forEach((npc, i) => { npc.hovered = i === index; });
+  }
+
+  return { npcs, npcPositions, hitSpheres, update, setHovered };
 }

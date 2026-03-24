@@ -34,15 +34,7 @@ export function createHud(callbacks) {
   navDiv.appendChild(prevBtn); navDiv.appendChild(hintWrap); navDiv.appendChild(nextBtn);
   container.appendChild(navDiv);
 
-  const progressDiv = document.createElement('div'); progressDiv.className = 'hud-progress';
-  const dots = [];
-  for (let i = 0; i < STATION_COUNT; i++) {
-    const dot = document.createElement('div'); dot.className = 'dot';
-    dot.title = NPC_DATA[i].name;
-    dot.addEventListener('click', () => callbacks.onGoTo(i));
-    progressDiv.appendChild(dot); dots.push(dot);
-  }
-  container.appendChild(progressDiv);
+  // Progress dots removed — replaced by minimap
 
   const ctaDiv = document.createElement('div'); ctaDiv.className = 'hud-cta'; ctaDiv.id = 'hud-cta-btn';
   const ctaLink = document.createElement('a'); ctaLink.href = '#'; ctaLink.textContent = 'JOIN THE MULTIVERSE';
@@ -162,12 +154,6 @@ export function createHud(callbacks) {
   function update() {
     prevBtn.disabled = state.currentStation <= 0 || state.isTransitioning;
     nextBtn.disabled = state.currentStation >= STATION_COUNT - 1 || state.isTransitioning;
-    dots.forEach((dot, i) => {
-      dot.classList.toggle('visited', state.visitedStations.has(i));
-      dot.classList.toggle('current', i === state.currentStation);
-      if (i === state.currentStation) { dot.style.borderColor = NPC_DATA[i].hexColor; dot.style.boxShadow = '0 0 8px ' + NPC_DATA[i].hexColor; }
-      else { dot.style.boxShadow = 'none'; }
-    });
   }
   function setAudioState(playing) {
     audioBtn.textContent = playing ? '\u{1F50A} ON' : '\u{1F50A} OFF';

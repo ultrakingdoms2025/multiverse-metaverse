@@ -141,7 +141,15 @@ export function createPortals(scene, spline) {
   // All portal fills are clickable
   const clickableFills = portals.map(p => p.fill);
 
-  function update(time) { timeUniform.value = time; }
+  function update(time) {
+    timeUniform.value = time;
+    portals.forEach((p, i) => {
+      // Slow spin around the portal's forward axis
+      const speed = 0.3 + i * 0.05;
+      p.torus.rotateZ(speed * 0.016);
+      p.fill.rotateZ(speed * 0.016);
+    });
+  }
   function setSyncPulse(enabled) { /* Future: sync all portal pulse phases */ }
   return { portals, clickableFills, update, setSyncPulse };
 }

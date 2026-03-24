@@ -24,6 +24,7 @@ import { createAudioManager } from './audio/audioManager.js';
 import { showFallback } from './ui/fallback.js';
 import { state, STATION_COUNT } from './state/gameState.js';
 import { createStatsPanel } from './ui/statsPanel.js';
+import { createMinimap } from './ui/minimap.js';
 import { createSocialPanel } from './ui/socialPanel.js';
 
 function isMobile() {
@@ -126,6 +127,7 @@ function init() {
 
   const audio = createAudioManager();
   const statsPanel = createStatsPanel();
+  const minimap = createMinimap(spline, (i) => cameraRail.goToStation(i));
   const socialPanel = createSocialPanel();
   // const prompt = createInteractionPrompt();
   const modal = createModal({ onOracleFirstClose: () => finalCta.show() });
@@ -257,6 +259,22 @@ function init() {
 
     cameraRail.update(dt);
     state._cameraPosition = camera.position.clone();
+
+    // Hover detection for NPCs
+    if (!state.modalOpen) {
+      const hoverMouse = new THREE.Vector2(state.mouse.x, state.mouse.y);
+      raycaster.setFromCamera(hoverMouse, camera);
+      const hoverHits = raycaster.intersectObjects(npcManager.hitSpheres, false);
+      if (hoverHits.length > 0) {
+        const idx = hoverHits[0].object.userData.npcIndex;
+        npcManager.setHovered(idx);
+        renderer.domElement.style.cursor = 'pointer';
+      } else {
+        npcManager.setHovered(-1);
+        renderer.domElement.style.cursor = 'default';
+      }
+    }
+
     npcManager.update(time, dt, cameraRail.getCurrentT());
     buildings.update(time);
     billboards.update(time);
@@ -270,6 +288,8 @@ function init() {
       ground.updateEnvMap(camera.position);
       state._lastEnvStation = state.currentStation;
     }
+
+    minimap.update(cameraRail.getCurrentT());
 
     // Show logo at last station
     const atEnd = state.currentStation === STATION_COUNT - 1 && !state.isTransitioning;
