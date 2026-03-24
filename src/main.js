@@ -42,7 +42,6 @@ function supportsWebGL() {
 }
 
 function init() {
-  if (isMobile()) { showFallback('mobile'); return; }
   if (!supportsWebGL()) { showFallback('webgl'); return; }
 
   const loading = createLoadingScreen();
