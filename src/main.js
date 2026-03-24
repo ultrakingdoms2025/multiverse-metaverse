@@ -18,7 +18,7 @@ import { createInputHandler } from './controls/inputHandler.js';
 import { createLoadingScreen } from './ui/loading.js';
 import { createHud } from './ui/hud.js';
 import { createModal } from './ui/modal.js';
-import { createInteractionPrompt } from './ui/interactionPrompt.js';
+// import { createInteractionPrompt } from './ui/interactionPrompt.js';
 import { createFinalCta } from './ui/finalCta.js';
 import { createAudioManager } from './audio/audioManager.js';
 import { showFallback } from './ui/fallback.js';
@@ -82,12 +82,11 @@ function init() {
   ground.initialCapture();
   state._npcHexColors = NPC_DATA.map(n => n.hexColor);
 
-
   const raycaster = new THREE.Raycaster();
   const clickMouse = new THREE.Vector2();
 
   const audio = createAudioManager();
-  const prompt = createInteractionPrompt();
+  // const prompt = createInteractionPrompt();
   const modal = createModal({ onOracleFirstClose: () => finalCta.show() });
   const finalCta = createFinalCta({
     onShow: () => { hud.hideCta(); portals.setSyncPulse(true); },
@@ -96,6 +95,7 @@ function init() {
   const hud = createHud({
     onNext: () => cameraRail.nextStation(),
     onPrev: () => cameraRail.prevStation(),
+    onGoTo: (i) => cameraRail.goToStation(i),
     onAudioToggle: () => { audio.toggle(); hud.setAudioState(state.audioPlaying); },
   });
 
@@ -143,7 +143,6 @@ function init() {
       state._lastEnvStation = state.currentStation;
     }
 
-    prompt.update(camera, npcManager.npcPositions);
     hud.update();
     postFx.updateBloom(dt);
     postFx.composer.render();

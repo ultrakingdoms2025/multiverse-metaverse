@@ -61,8 +61,8 @@ export function createCameraRail(camera, spline, npcPositions) {
     camera.lookAt(lookTarget);
 
     // Apply mouse parallax via small quaternion rotation (avoids gimbal lock)
-    const parallaxX = state.mouse.x * 0.05; // yaw
-    const parallaxY = state.mouse.y * 0.03; // pitch
+    const parallaxX = state.mouse.x * 0.25; // yaw
+    const parallaxY = state.mouse.y * 0.15; // pitch
     camera.rotateY(-parallaxX);
     camera.rotateX(parallaxY);
   }

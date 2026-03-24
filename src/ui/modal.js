@@ -38,7 +38,6 @@ export function createModal(callbacks) {
     layer.style.boxShadow = '-5px 0 30px ' + npc.hexColor + '33';
     backdrop.style.display = 'block';
     layer.classList.remove('glitch-out'); layer.classList.add('glitch-in');
-    backdrop.addEventListener('click', close);
   }
 
   function close() {
@@ -50,8 +49,12 @@ export function createModal(callbacks) {
       layer.classList.remove('glitch-out');
       state.modalOpen = false; Object.assign(state, BLOOM_STATES.exploring);
       if (closedIdx === 5 && !state.finalCtaTriggered) { state.finalCtaTriggered = true; callbacks.onOracleFirstClose?.(); }
-      state.modalNpcIndex = -1; backdrop.removeEventListener('click', close);
+      state.modalNpcIndex = -1;
     }, 300);
   }
+
+  // Click outside modal (on backdrop) to close
+  backdrop.addEventListener('click', close);
+
   return { open, close };
 }

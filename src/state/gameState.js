@@ -3,14 +3,14 @@ export const state = {
   visitedStations: new Set(), modalOpen: false, modalNpcIndex: -1,
   activeNpcIndex: -1, finalCtaTriggered: false, finalCtaShown: false,
   audioPlaying: false, audioLoaded: false, sceneReady: false,
-  bloomStrength: 1.8, bloomRadius: 0.5, bloomThreshold: 0.4,
+  bloomStrength: 0.6, bloomRadius: 0.3, bloomThreshold: 0.7,
   mouse: { x: 0, y: 0 },
 };
 
 export const BLOOM_STATES = {
-  exploring: { bloomStrength: 1.8, bloomRadius: 0.5, bloomThreshold: 0.4 },
-  modal:     { bloomStrength: 2.2, bloomRadius: 0.5, bloomThreshold: 0.4 },
-  finalCta:  { bloomStrength: 2.5, bloomRadius: 0.6, bloomThreshold: 0.6 },
+  exploring: { bloomStrength: 0.6, bloomRadius: 0.3, bloomThreshold: 0.7 },
+  modal:     { bloomStrength: 0.8, bloomRadius: 0.3, bloomThreshold: 0.6 },
+  finalCta:  { bloomStrength: 1.0, bloomRadius: 0.4, bloomThreshold: 0.6 },
 };
 
 export const STATION_T_VALUES = [0.0, 0.18, 0.36, 0.54, 0.72, 0.9];

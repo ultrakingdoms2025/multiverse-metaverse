@@ -1,4 +1,4 @@
-#final-cta-overlay { background: rgba(0,0,0,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.8s ease; }
+#final-cta-overlay { background: rgba(0,0,0,0.7); flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.8s ease; }
 #final-cta-overlay.visible { opacity: 1; }
 .final-title { font-family: 'Orbitron', sans-serif; font-size: 4rem; font-weight: 900; letter-spacing: 0.3em; color: #fff; text-shadow: 0 0 30px #ff00ff, 0 0 60px #ff00ff55, 0 0 90px #00ffff33; margin-bottom: 10px; overflow: hidden; }
 .final-title span { display: inline-block; opacity: 0; transform: translateY(20px); animation: letterReveal 0.1s ease forwards; }

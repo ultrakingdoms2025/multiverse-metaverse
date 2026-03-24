@@ -13,13 +13,13 @@ export function createNeonSigns(scene) {
     const mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(4, 1.5),
       new THREE.MeshStandardMaterial({
-        color: cfg.color, emissive: cfg.color, emissiveIntensity: 3.0,
+        color: cfg.color, emissive: cfg.color, emissiveIntensity: 1.0,
         transparent: true, opacity: 0.9,
       })
     );
     mesh.position.set(...cfg.pos); mesh.rotation.y = cfg.rot;
     scene.add(mesh);
-    const light = new THREE.PointLight(cfg.color, 1.5, 12);
+    const light = new THREE.PointLight(cfg.color, 0.6, 12);
     light.position.set(cfg.pos[0], cfg.pos[1] - 2, cfg.pos[2]);
     scene.add(light);
   });

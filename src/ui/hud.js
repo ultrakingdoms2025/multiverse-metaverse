@@ -18,23 +18,33 @@ export function createHud(callbacks) {
   const navDiv = document.createElement('div'); navDiv.className = 'hud-nav';
   const prevBtn = document.createElement('button'); prevBtn.textContent = '\u25C0'; prevBtn.disabled = true;
   prevBtn.addEventListener('click', () => callbacks.onPrev());
-  const hint = document.createElement('span'); hint.className = 'nav-hint'; hint.textContent = 'Use Arrow Keys or A/D';
+  const hintWrap = document.createElement('div'); hintWrap.className = 'nav-hint-wrap';
+  const hint = document.createElement('span'); hint.className = 'nav-hint'; hint.textContent = 'Use Arrows, Mouse Scroll or A/D';
+  const hint2 = document.createElement('span'); hint2.className = 'nav-hint'; hint2.textContent = 'Click or press E to interact';
+  hintWrap.appendChild(hint); hintWrap.appendChild(hint2);
   const nextBtn = document.createElement('button'); nextBtn.textContent = '\u25B6';
   nextBtn.addEventListener('click', () => callbacks.onNext());
-  navDiv.appendChild(prevBtn); navDiv.appendChild(hint); navDiv.appendChild(nextBtn);
+  navDiv.appendChild(prevBtn); navDiv.appendChild(hintWrap); navDiv.appendChild(nextBtn);
   container.appendChild(navDiv);
 
   const progressDiv = document.createElement('div'); progressDiv.className = 'hud-progress';
   const dots = [];
   for (let i = 0; i < STATION_COUNT; i++) {
     const dot = document.createElement('div'); dot.className = 'dot';
+    dot.title = NPC_DATA[i].name;
+    dot.addEventListener('click', () => callbacks.onGoTo(i));
     progressDiv.appendChild(dot); dots.push(dot);
   }
   container.appendChild(progressDiv);
 
   const ctaDiv = document.createElement('div'); ctaDiv.className = 'hud-cta'; ctaDiv.id = 'hud-cta-btn';
   const ctaLink = document.createElement('a'); ctaLink.href = '#'; ctaLink.textContent = 'JOIN THE MULTIVERSE';
-  ctaDiv.appendChild(ctaLink); container.appendChild(ctaDiv);
+  ctaLink.addEventListener('click', (e) => e.preventDefault());
+  const ctaMenu = document.createElement('div'); ctaMenu.className = 'hud-cta-menu';
+  const dl = document.createElement('a'); dl.href = '#'; dl.textContent = 'DOWNLOAD ULTRA KINGDOMS';
+  const su = document.createElement('a'); su.href = '#'; su.textContent = 'SIGNUP ON DASHBOARD';
+  ctaMenu.appendChild(dl); ctaMenu.appendChild(su);
+  ctaDiv.appendChild(ctaMenu); ctaDiv.appendChild(ctaLink); container.appendChild(ctaDiv);
 
   function update() {
     prevBtn.disabled = state.currentStation <= 0 || state.isTransitioning;

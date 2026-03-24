@@ -15,7 +15,7 @@ const windowFrag = `
     float lit = step(0.4, rand);
     float flicker = step(0.95, fract(sin(dot(id + uTime * 0.1, vec2(45.23, 67.89))) * 12345.6789));
     float w = window * lit * (1.0 - flicker * 0.5);
-    vec3 col = uColor * 0.15 + uEmissiveColor * w * 2.5;
+    vec3 col = uColor * 0.15 + uEmissiveColor * w * 0.8;
     gl_FragColor = vec4(col, 1.0);
   }
 `;
@@ -33,9 +33,9 @@ export function createBuildings(scene) {
   for (let i = 0; i < 80; i++) {
     const side = i % 2 === 0 ? -1 : 1;
     const depth = Math.random() * 70 - 10;
-    const width = 3 + Math.random() * 6;
+    const width = 3 + Math.random() * 5;
     const height = 8 + Math.random() * 35;
-    const offsetX = side * (4 + Math.random() * 8);
+    const offsetX = side * (9 + Math.random() * 10);
     const c = COLORS[Math.floor(Math.random() * COLORS.length)];
     const mesh = new THREE.Mesh(
       new THREE.BoxGeometry(width, height, width),

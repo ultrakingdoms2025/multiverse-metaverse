@@ -8,12 +8,18 @@
 .hud-nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .hud-nav button:hover:not(:disabled) { background: rgba(255,0,255,0.2); border-color: #ff00ff; }
 .hud-nav button:disabled { opacity: 0.2; cursor: default; }
+.hud-nav .nav-hint-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .hud-nav .nav-hint { font-size: 0.75rem; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; }
 .hud-progress { position: absolute; bottom: 30px; left: 30px; display: flex; gap: 10px; }
-.hud-progress .dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); background: transparent; transition: all 0.3s; }
+.hud-progress .dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); background: transparent; transition: all 0.3s; cursor: pointer; }
+.hud-progress .dot:hover { transform: scale(1.5); border-color: #ff00ff; }
 .hud-progress .dot.visited { background: #fff; border-color: #fff; }
 .hud-progress .dot.current { animation: dotPulse 1.5s infinite; }
 .hud-cta { position: absolute; bottom: 30px; right: 30px; }
-.hud-cta a { display: inline-block; padding: 10px 24px; background: linear-gradient(135deg, rgba(255,0,255,0.3), rgba(0,255,255,0.3)); border: 1px solid #ff00ff; color: #fff; text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; letter-spacing: 0.15em; border-radius: 4px; transition: all 0.3s; text-shadow: 0 0 10px #ff00ff; }
+.hud-cta a { display: block; padding: 10px 24px; background: linear-gradient(135deg, rgba(255,0,255,0.3), rgba(0,255,255,0.3)); border: 1px solid #ff00ff; color: #fff; text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; letter-spacing: 0.15em; border-radius: 4px; transition: all 0.3s; text-shadow: 0 0 10px #ff00ff; text-align: center; width: 280px; box-sizing: border-box; }
 .hud-cta a:hover { background: linear-gradient(135deg, rgba(255,0,255,0.5), rgba(0,255,255,0.5)); box-shadow: 0 0 20px rgba(255,0,255,0.3); }
+.hud-cta-menu { position: absolute; bottom: 100%; right: 0; margin-bottom: 0; padding-bottom: 8px; display: flex; flex-direction: column; gap: 6px; opacity: 0; visibility: hidden; transform: translateY(8px); transition: all 0.25s ease; pointer-events: none; }
+.hud-cta:hover .hud-cta-menu, .hud-cta:focus-within .hud-cta-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+.hud-cta-menu a { display: block; padding: 10px 20px; background: rgba(10, 5, 25, 0.9); border: 1px solid rgba(255,0,255,0.4); color: #fff; text-decoration: none; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; border-radius: 4px; white-space: nowrap; transition: all 0.2s; text-align: center; width: 280px; box-sizing: border-box; }
+.hud-cta-menu a:hover { background: rgba(255,0,255,0.2); border-color: #ff00ff; box-shadow: 0 0 15px rgba(255,0,255,0.3); }
 @keyframes dotPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.4); } }

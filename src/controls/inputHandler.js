@@ -13,6 +13,12 @@ export function createInputHandler(callbacks) {
     state.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     state.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
   }
+  function onWheel(e) {
+    if (state.modalOpen || state.finalCtaShown) return;
+    if (e.deltaY > 0) callbacks.onPrev();
+    else if (e.deltaY < 0) callbacks.onNext();
+  }
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('wheel', onWheel, { passive: true });
 }

@@ -6,7 +6,7 @@ const portalFrag = `
     float pulse = sin(uTime * 2.0 + vUv.y * 6.2831) * 0.5 + 0.5;
     float ring = smoothstep(0.3, 0.35, length(vUv - 0.5)) * smoothstep(0.5, 0.45, length(vUv - 0.5));
     float energy = ring * (0.5 + pulse * 0.5);
-    vec3 col = uColor * energy * 3.0;
+    vec3 col = uColor * energy * 1.2;
     gl_FragColor = vec4(col, energy * 0.8);
   }
 `;
@@ -29,10 +29,10 @@ export function createPortals(scene, spline) {
     const pos = spline.getPointAt(t);
     const tangent = spline.getTangentAt(t);
     const torus = new THREE.Mesh(
-      new THREE.TorusGeometry(3.5, 0.15, 16, 48),
+      new THREE.TorusGeometry(2.5, 0.12, 16, 48),
       new THREE.MeshStandardMaterial({
         color: PORTAL_COLORS[i], emissive: PORTAL_COLORS[i],
-        emissiveIntensity: 2.0, metalness: 0.8, roughness: 0.2,
+        emissiveIntensity: 0.8, metalness: 0.8, roughness: 0.2,
       })
     );
     torus.position.copy(pos); torus.position.y = 3.5;
@@ -44,11 +44,11 @@ export function createPortals(scene, spline) {
       vertexShader: portalVert, fragmentShader: portalFrag,
       transparent: true, side: THREE.DoubleSide, depthWrite: false,
     });
-    const fill = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), fillMat);
+    const fill = new THREE.Mesh(new THREE.PlaneGeometry(4.5, 4.5), fillMat);
     fill.position.copy(torus.position); fill.quaternion.copy(torus.quaternion);
     scene.add(fill);
 
-    const light = new THREE.PointLight(PORTAL_COLORS[i], 2.0, 15);
+    const light = new THREE.PointLight(PORTAL_COLORS[i], 0.8, 15);
     light.position.copy(pos); light.position.y = 3.5;
     scene.add(light);
     portals.push({ torus, fill, light });
