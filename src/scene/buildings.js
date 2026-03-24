@@ -15,17 +15,18 @@ const windowFrag = `
     float lit = step(0.4, rand);
     float flicker = step(0.95, fract(sin(dot(id + uTime * 0.1, vec2(45.23, 67.89))) * 12345.6789));
     float w = window * lit * (1.0 - flicker * 0.5);
-    vec3 col = uColor * 0.15 + uEmissiveColor * w * 0.8;
+    vec3 col = uColor * 0.12 + uEmissiveColor * w * 0.4;
     gl_FragColor = vec4(col, 1.0);
   }
 `;
 
 const COLORS = [
-  { base: 0x111122, emissive: new THREE.Color(0x00ffff) },
-  { base: 0x111122, emissive: new THREE.Color(0xff00ff) },
-  { base: 0x111122, emissive: new THREE.Color(0x6600ff) },
-  { base: 0x110011, emissive: new THREE.Color(0xff0066) },
-  { base: 0x111122, emissive: new THREE.Color(0x4488ff) },
+  { base: 0x0e1018, emissive: new THREE.Color(0x88ccdd) },
+  { base: 0x0e1018, emissive: new THREE.Color(0xcc99bb) },
+  { base: 0x0e1018, emissive: new THREE.Color(0x9988cc) },
+  { base: 0x0e1018, emissive: new THREE.Color(0xddaa88) },
+  { base: 0x0e1018, emissive: new THREE.Color(0x88aacc) },
+  { base: 0x0e1018, emissive: new THREE.Color(0x99ccaa) },
 ];
 
 export function createBuildings(scene) {
