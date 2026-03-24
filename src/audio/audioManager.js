@@ -1,19 +1,34 @@
 import { state } from '../state/gameState.js';
+
 export function createAudioManager() {
-  let ctx = null;
+  const audio = new Audio('/theme.mp3');
+  audio.loop = true;
+  audio.volume = 0.5;
+
   function toggle() {
     if (!state.audioLoaded) {
-      try {
-        ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const gain = ctx.createGain(); gain.gain.value = 0.1; gain.connect(ctx.destination);
-        const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = 80;
-        osc.connect(gain); osc.start();
-        state.audioLoaded = true; state.audioPlaying = true;
-      } catch (e) { console.warn('Audio failed:', e); }
+      audio.play().then(() => {
+        state.audioLoaded = true;
+        state.audioPlaying = true;
+      }).catch(e => console.warn('Audio failed:', e));
       return;
     }
-    if (state.audioPlaying) { ctx.suspend(); state.audioPlaying = false; }
-    else { ctx.resume(); state.audioPlaying = true; }
+    if (state.audioPlaying) {
+      audio.pause();
+      state.audioPlaying = false;
+    } else {
+      audio.play();
+      state.audioPlaying = true;
+    }
   }
-  return { toggle };
+
+  function setVolume(v) {
+    audio.volume = Math.max(0, Math.min(1, v));
+  }
+
+  function getVolume() {
+    return audio.volume;
+  }
+
+  return { toggle, setVolume, getVolume };
 }

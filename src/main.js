@@ -22,7 +22,9 @@ import { createModal } from './ui/modal.js';
 import { createFinalCta } from './ui/finalCta.js';
 import { createAudioManager } from './audio/audioManager.js';
 import { showFallback } from './ui/fallback.js';
-import { state } from './state/gameState.js';
+import { state, STATION_COUNT } from './state/gameState.js';
+import { createStatsPanel } from './ui/statsPanel.js';
+import { createSocialPanel } from './ui/socialPanel.js';
 
 function isMobile() {
   // Only check viewport width — 'ontouchstart' is true on touch-enabled Windows desktops
@@ -82,10 +84,49 @@ function init() {
   ground.initialCapture();
   state._npcHexColors = NPC_DATA.map(n => n.hexColor);
 
+  // Floor logo at the start of the road
+  const logoTexture = new THREE.TextureLoader().load('/uklogo.png');
+  logoTexture.colorSpace = THREE.SRGBColorSpace;
+  const logoMat = new THREE.ShaderMaterial({
+    uniforms: { uTex: { value: logoTexture } },
+    vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `
+      uniform sampler2D uTex; varying vec2 vUv;
+      void main() {
+        vec4 c = texture2D(uTex, vUv);
+        if (c.a < 0.1) discard;
+        // White to gray — keeps the original logo but avoids glare
+        float brightness = (c.r + c.g + c.b) / 3.0;
+        vec3 col = brightness > 0.7 ? vec3(0.55) : c.rgb;
+        gl_FragColor = vec4(col, c.a);
+      }
+    `,
+    transparent: true, depthWrite: false,
+  });
+  const baseLogoWidth = 7;
+  const baseLogoHeight = 2;
+  const baseAspect = 16 / 9;
+  function getLogoScale() {
+    const aspect = window.innerWidth / window.innerHeight;
+    return aspect / baseAspect;
+  }
+  const floorLogo = new THREE.Mesh(new THREE.PlaneGeometry(baseLogoWidth, baseLogoHeight), logoMat);
+  floorLogo.rotation.x = -Math.PI / 2;
+  floorLogo.rotation.z = Math.PI;
+  // Rotate 35 degrees left from the camera approach
+  floorLogo.rotation.z -= THREE.MathUtils.degToRad(19.48);
+  floorLogo.position.set(-1.5, 0.01, 0);
+  const s = getLogoScale();
+  floorLogo.scale.set(s, s, s);
+  scene.add(floorLogo);
+
   const raycaster = new THREE.Raycaster();
+  raycaster.far = 200;
   const clickMouse = new THREE.Vector2();
 
   const audio = createAudioManager();
+  const statsPanel = createStatsPanel();
+  const socialPanel = createSocialPanel();
   // const prompt = createInteractionPrompt();
   const modal = createModal({ onOracleFirstClose: () => finalCta.show() });
   const finalCta = createFinalCta({
@@ -97,6 +138,7 @@ function init() {
     onPrev: () => cameraRail.prevStation(),
     onGoTo: (i) => cameraRail.goToStation(i),
     onAudioToggle: () => { audio.toggle(); hud.setAudioState(state.audioPlaying); },
+    onVolumeChange: (v) => { audio.setVolume(v); },
   });
 
   createInputHandler({
@@ -107,19 +149,104 @@ function init() {
     onDismissFinalCta: () => finalCta.dismiss(),
   });
 
+  // Portal video modals — one per portal for independent customization
+  const portalNames = ['The Architect\'s Realm', 'The Broker\'s Market', 'The Warden\'s Fortress', 'The Navigator\'s Voyage', 'The Syndicate\'s Underworld', 'The Oracle\'s Vision'];
+  const portalDescs = [
+    'You peer through the shimmering portal and glimpse the Architect\u2019s domain\u2026 a world of infinite blueprints.',
+    'Beyond the golden shimmer lies the Broker\u2019s endless marketplace\u2026 where anything has a price.',
+    'Through the crimson veil you see the Warden\u2019s iron fortress\u2026 where order is absolute.',
+    'The blue gateway reveals the Navigator\u2019s star charts\u2026 mapping paths through the multiverse.',
+    'Purple shadows swirl revealing the Syndicate\u2019s hidden network\u2026 power flows in the darkness.',
+    'Emerald light pulses as the Oracle\u2019s visions unfold\u2026 the future is taking shape.',
+  ];
+  const portalHexColors = ['#00ffff', '#ffaa00', '#ff0044', '#4488ff', '#aa00ff', '#00ffaa'];
+
+  const portalModals = [];
+  const portalVids = [];
+
+  // Shared backdrop
+  const portalBackdrop = document.createElement('div');
+  portalBackdrop.style.cssText = 'display:none;position:fixed;inset:0;z-index:19;background:rgba(0,0,0,0.5);';
+  document.body.appendChild(portalBackdrop);
+
+  function closePortalModal() {
+    portalModals.forEach(m => m.style.display = 'none');
+    portalBackdrop.style.display = 'none';
+    state.modalOpen = false;
+  }
+  portalBackdrop.addEventListener('click', closePortalModal);
+
+  for (let pi = 0; pi < portalNames.length; pi++) {
+    const color = portalHexColors[pi];
+    const pm = document.createElement('div');
+    pm.style.cssText = `display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:20;background:rgba(0,10,20,0.85);border:1px solid ${color};border-radius:12px;padding:24px;max-width:500px;width:90%;box-shadow:0 0 40px ${color}44,inset 0 0 20px ${color}0d;backdrop-filter:blur(10px);`;
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '\u00D7';
+    closeBtn.style.cssText = `position:absolute;top:8px;right:12px;background:none;border:none;color:${color};font-size:24px;cursor:pointer;`;
+    closeBtn.addEventListener('click', closePortalModal);
+    pm.appendChild(closeBtn);
+    const title = document.createElement('h2');
+    title.textContent = portalNames[pi];
+    title.style.cssText = `margin:0 0 12px;color:${color};font-family:monospace;font-size:20px;text-shadow:0 0 10px ${color};`;
+    pm.appendChild(title);
+    const desc = document.createElement('p');
+    desc.textContent = portalDescs[pi];
+    desc.style.cssText = 'margin:0 0 16px;color:#ccc;font-family:monospace;font-size:14px;line-height:1.6;';
+    pm.appendChild(desc);
+    const vid = document.createElement('video');
+    vid.src = '/overlay.mp4';
+    vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true;
+    vid.style.cssText = `width:100%;border-radius:8px;border:1px solid ${color}55;`;
+    pm.appendChild(vid);
+    document.body.appendChild(pm);
+    portalModals.push(pm);
+    portalVids.push(vid);
+  }
+
+  function openPortalModal(index) {
+    if (index < 0 || index >= portalModals.length) return;
+    state.modalOpen = true;
+    portalModals[index].style.display = 'block';
+    portalBackdrop.style.display = 'block';
+    portalVids[index].play();
+  }
+
   renderer.domElement.addEventListener('click', (e) => {
     if (state.modalOpen || state.finalCtaShown) return;
     clickMouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     clickMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(clickMouse, camera);
+
+    // Check portal video fills first
+    const portalHits = raycaster.intersectObjects(portals.clickableFills, false);
+    if (portalHits.length > 0 && portalHits[0].object.userData.portalVideo) {
+      openPortalModal(portalHits[0].object.userData.portalIndex);
+      return;
+    }
+
+    // Then check NPCs
     const hits = raycaster.intersectObjects(npcManager.hitSpheres, false);
     if (hits.length > 0) {
       const idx = hits[0].object.userData.npcIndex;
-      if (idx !== undefined && state.activeNpcIndex === idx) modal.open(idx);
+      if (idx !== undefined && idx !== 6) modal.open(idx);
     }
   });
 
-  window.addEventListener('resize', () => postFx.onResize());
+  // End-of-road logo overlay
+  const endLogo = document.createElement('div');
+  endLogo.id = 'end-logo';
+  endLogo.style.cssText = 'position:fixed;inset:0;z-index:12;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 0.8s ease;background:#000;';
+  const endLogoImg = document.createElement('img');
+  endLogoImg.src = '/uklogo.png';
+  endLogoImg.style.cssText = 'max-width:50%;max-height:40%;filter:drop-shadow(0 0 30px rgba(255,170,0,0.6)) drop-shadow(0 0 60px rgba(255,170,0,0.3));border-radius:8px;';
+  endLogo.appendChild(endLogoImg);
+  document.body.appendChild(endLogo);
+
+  window.addEventListener('resize', () => {
+    postFx.onResize();
+    const ls = getLogoScale();
+    floorLogo.scale.set(ls, ls, ls);
+  });
   state.visitedStations.add(0);
   loading.setProgress(1.0);
 
@@ -138,10 +265,15 @@ function init() {
     splash.update(dt);
     splash.spawnNearCamera(camera.position);
 
+    ground.update(time);
     if (!state.isTransitioning && state._lastEnvStation !== state.currentStation) {
       ground.updateEnvMap(camera.position);
       state._lastEnvStation = state.currentStation;
     }
+
+    // Show logo at last station
+    const atEnd = state.currentStation === STATION_COUNT - 1 && !state.isTransitioning;
+    endLogo.style.opacity = atEnd ? '1' : '0';
 
     hud.update();
     postFx.updateBloom(dt);

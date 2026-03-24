@@ -18,4 +18,6 @@ export const NPC_DATA = [
   { name: 'The Oracle', color: new THREE.Color(0x00ffaa), hexColor: '#00ffaa', stationIndex: 5, visualType: 'timeline',
     quote: '\u201CI see the threads of what\u2019s coming. New realms forming in the void. The multiverse is expanding, and you can be there from the beginning.\u201D',
     features: ['Early access beta launching soon', 'Regular content drops: new realms, abilities, and events', 'Community-driven development \u2014 your feedback shapes the game'] },
+  { name: 'Ultra Kingdoms', color: new THREE.Color(0xff8800), hexColor: '#ff8800', stationIndex: 6, visualType: 'timeline',
+    quote: '', features: [] },
 ];

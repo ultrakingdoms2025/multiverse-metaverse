@@ -15,15 +15,87 @@ const portalVert = `
   void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
 `;
 
+// Video portal shader — circular mask with glowing edge
+const videoPortalFrag = `
+  uniform sampler2D uVideo;
+  uniform float uTime;
+  uniform vec3 uColor;
+  varying vec2 vUv;
+  void main() {
+    vec2 centered = vUv - 0.5;
+    float dist = length(centered);
+
+    // Circular mask matching the torus inner radius
+    float radius = 0.42;
+    float edgeWidth = 0.06;
+
+    // Discard outside circle
+    if (dist > radius + edgeWidth) discard;
+
+    // Glowing edge
+    float edgeGlow = smoothstep(radius, radius - edgeWidth, dist);
+    float outerGlow = smoothstep(radius + edgeWidth, radius, dist) * (1.0 - edgeGlow);
+
+    // Video UV — map circle interior to video
+    vec2 videoUv = (centered / radius) * 0.5 + 0.5;
+    vec3 video = texture2D(uVideo, videoUv).rgb;
+
+    // Add subtle distortion for otherworldly feel
+    float ripple = sin(dist * 20.0 - uTime * 2.0) * 0.02;
+    vec2 distortedUv = (centered / radius) * (0.5 + ripple) + 0.5;
+    video = texture2D(uVideo, distortedUv).rgb;
+
+    // Invert video colors for otherworldly look
+    video = vec3(1.0) - video;
+    // Darken to reduce brightness
+    video *= 0.5;
+    // Tint the video slightly with portal color
+    video = mix(video, uColor, 0.15);
+
+    // Combine: video inside, glow at edge
+    vec3 glow = uColor * 2.0 * outerGlow;
+    vec3 finalColor = video * edgeGlow + glow;
+    float alpha = max(edgeGlow, outerGlow * 0.8);
+
+    gl_FragColor = vec4(finalColor, alpha);
+  }
+`;
+
 const PORTAL_COLORS = [
   new THREE.Color(0x00ffff), new THREE.Color(0xffaa00),
   new THREE.Color(0xff0044), new THREE.Color(0x4488ff), new THREE.Color(0xaa00ff),
+  new THREE.Color(0x00ffaa),
 ];
+
+function createPortalVideo() {
+  const video = document.createElement('video');
+  video.src = '/overlay.mp4';
+  video.crossOrigin = 'anonymous';
+  video.loop = true;
+  video.muted = true;
+  video.playsInline = true;
+  video.autoplay = true;
+  video.play().catch(() => {
+    const playOnce = () => { video.play(); window.removeEventListener('click', playOnce); };
+    window.addEventListener('click', playOnce);
+  });
+  return video;
+}
 
 export function createPortals(scene, spline) {
   const portals = [];
   const timeUniform = { value: 0 };
-  const portalTValues = [0.09, 0.27, 0.45, 0.63, 0.81];
+  const portalTValues = [0.09, 0.22, 0.40, 0.55, 0.70, 0.83];
+
+  // Each portal gets its own video element and texture for future customization
+  const portalVideos = portalTValues.map(() => createPortalVideo());
+  const videoTextures = portalVideos.map(video => {
+    const tex = new THREE.VideoTexture(video);
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  });
 
   portalTValues.forEach((t, i) => {
     const pos = spline.getPointAt(t);
@@ -35,26 +107,41 @@ export function createPortals(scene, spline) {
         emissiveIntensity: 0.8, metalness: 0.8, roughness: 0.2,
       })
     );
-    torus.position.copy(pos); torus.position.y = 3.5;
+    torus.position.copy(pos); torus.position.y = 6;
+    // Offset portal 2 (red/Warden) to the right side
+    if (i === 2) {
+      const side = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
+      torus.position.add(side.multiplyScalar(2));
+    }
     torus.lookAt(pos.clone().add(tangent));
     scene.add(torus);
 
     const fillMat = new THREE.ShaderMaterial({
-      uniforms: { uTime: timeUniform, uColor: { value: PORTAL_COLORS[i] } },
-      vertexShader: portalVert, fragmentShader: portalFrag,
+      uniforms: {
+        uVideo: { value: videoTextures[i] },
+        uTime: timeUniform,
+        uColor: { value: PORTAL_COLORS[i] },
+      },
+      vertexShader: portalVert,
+      fragmentShader: videoPortalFrag,
       transparent: true, side: THREE.DoubleSide, depthWrite: false,
     });
     const fill = new THREE.Mesh(new THREE.PlaneGeometry(4.5, 4.5), fillMat);
     fill.position.copy(torus.position); fill.quaternion.copy(torus.quaternion);
+    fill.userData.portalVideo = true;
+    fill.userData.portalIndex = i;
     scene.add(fill);
 
     const light = new THREE.PointLight(PORTAL_COLORS[i], 0.8, 15);
-    light.position.copy(pos); light.position.y = 3.5;
+    light.position.copy(pos); light.position.y = 6;
     scene.add(light);
     portals.push({ torus, fill, light });
   });
 
+  // All portal fills are clickable
+  const clickableFills = portals.map(p => p.fill);
+
   function update(time) { timeUniform.value = time; }
   function setSyncPulse(enabled) { /* Future: sync all portal pulse phases */ }
-  return { portals, update, setSyncPulse };
+  return { portals, clickableFills, update, setSyncPulse };
 }

@@ -8,8 +8,10 @@ export function createNpcManager(scene, spline) {
   const npcs = [], npcPositions = [], hitSpheres = [];
   NPC_DATA.forEach((data, i) => {
     const t = STATION_T_VALUES[i];
-    const pos = spline.getPointAt(t);
-    const tangent = spline.getTangentAt(t);
+    // Place all NPCs slightly ahead so they're visible from the camera stop point
+    const npcT = Math.min(t + 0.04, 1.0);
+    const pos = spline.getPointAt(npcT);
+    const tangent = spline.getTangentAt(npcT);
     const side = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
     const npcPos = pos.clone().add(side.multiplyScalar(3));
     npcPos.y = 0;
@@ -23,6 +25,7 @@ export function createNpcManager(scene, spline) {
       color: data.color, size: 0.1, transparent: true, opacity: 0.8,
       blending: THREE.AdditiveBlending, depthWrite: false,
     }));
+    orbitPts.frustumCulled = false;
     scene.add(orbitPts);
     npcPositions.push(npcPos.clone().setY(1.5));
     hitSpheres.push(hitSphere);
@@ -33,7 +36,7 @@ export function createNpcManager(scene, spline) {
     state.activeNpcIndex = getActiveStation(currentT);
     npcs.forEach((npc, i) => {
       npc.group.position.y = npc.baseY + Math.sin(time * (Math.PI * 2 / 3) + i) * 0.1;
-      const target = (i === state.activeNpcIndex) ? 3.0 : 1.0;
+      const target = (i === state.activeNpcIndex) ? 1.0 : 0.5;
       const cur = npc.material.uniforms.uEmissiveMultiplier.value;
       npc.material.uniforms.uEmissiveMultiplier.value += (target - cur) * Math.min(dt * 4, 1);
       npc.material.uniforms.uTime.value = time;
