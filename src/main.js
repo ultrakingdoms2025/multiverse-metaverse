@@ -58,7 +58,7 @@ function init() {
   const spline = createSplinePath();
   loading.setProgress(0.2);
 
-  const buildings = createBuildings(scene);
+  const buildings = createBuildings(scene, spline);
   loading.setProgress(0.3);
 
   const ground = createGround(scene, renderer);

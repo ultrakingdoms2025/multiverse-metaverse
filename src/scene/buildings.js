@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { NPC_DATA } from '../npcs/npcData.js';
+import { STATION_T_VALUES } from '../state/gameState.js';
 
 const windowVert = `
   varying vec2 vUv;
@@ -29,15 +31,52 @@ const COLORS = [
   { base: 0x0e1018, emissive: new THREE.Color(0x99ccaa) },
 ];
 
-export function createBuildings(scene) {
+// How similar are two colors (0 = identical, higher = more different)
+function colorDistance(a, b) {
+  return Math.sqrt(
+    Math.pow(a.r - b.r, 2) +
+    Math.pow(a.g - b.g, 2) +
+    Math.pow(a.b - b.b, 2)
+  );
+}
+
+export function createBuildings(scene, spline) {
   const timeUniform = { value: 0 };
+
+  // Pre-compute NPC world positions and colors
+  const npcZones = NPC_DATA.map((npc, i) => {
+    const t = Math.min(STATION_T_VALUES[i] + 0.04, 1.0);
+    const pos = spline.getPointAt(t);
+    return { z: pos.z, color: npc.color };
+  });
+
   for (let i = 0; i < 80; i++) {
     const side = i % 2 === 0 ? -1 : 1;
     const depth = Math.random() * 70 - 10;
     const width = 3 + Math.random() * 5;
     const height = 8 + Math.random() * 35;
     const offsetX = side * (9 + Math.random() * 10);
-    const c = COLORS[Math.floor(Math.random() * COLORS.length)];
+
+    // Find the nearest NPC to this building
+    let nearestNpc = null;
+    let nearestDist = Infinity;
+    npcZones.forEach(npc => {
+      const d = Math.abs(depth - npc.z);
+      if (d < nearestDist) { nearestDist = d; nearestNpc = npc; }
+    });
+
+    // Pick a color that doesn't clash with nearest NPC (within 12 units)
+    let c;
+    if (nearestNpc && nearestDist < 12) {
+      // Filter out colors too similar to the NPC
+      const safe = COLORS.filter(col => colorDistance(col.emissive, nearestNpc.color) > 0.5);
+      c = safe.length > 0
+        ? safe[Math.floor(Math.random() * safe.length)]
+        : COLORS[Math.floor(Math.random() * COLORS.length)];
+    } else {
+      c = COLORS[Math.floor(Math.random() * COLORS.length)];
+    }
+
     const mesh = new THREE.Mesh(
       new THREE.BoxGeometry(width, height, width),
       new THREE.ShaderMaterial({

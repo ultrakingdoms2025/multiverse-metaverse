@@ -11,10 +11,10 @@ export function createHologramMaterial(color) {
         scan = smoothstep(0.3, 0.7, scan);
         float flicker = 1.0 - 0.15 * step(0.98, rand(vec2(floor(uTime * 15.0), 0.0)));
         float edge = pow(1.0 - abs(vUv.x - 0.5) * 2.0, 0.5);
-        float intensity = (0.4 + scan * 0.6) * flicker * edge;
-        gl_FragColor = vec4(uColor * intensity * uEmissiveMultiplier, 0.7 * intensity * flicker);
+        float intensity = (0.25 + scan * 0.35) * flicker * edge;
+        gl_FragColor = vec4(uColor * intensity * uEmissiveMultiplier, 1.9 * intensity * flicker);
       }
     `,
-    transparent: true, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending,
+    transparent: true, side: THREE.DoubleSide, depthWrite: false, blending: THREE.NormalBlending,
   });
 }
