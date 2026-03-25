@@ -156,8 +156,8 @@ function init() {
   const portalNames = ['The Architect\'s Realm', 'The Broker\'s Market', 'The Warden\'s Fortress', 'The Navigator\'s Voyage', 'The Syndicate\'s Underworld', 'The Oracle\'s Vision'];
   const portalDescs = [
     'You peer through the shimmering portal and glimpse the Architect\u2019s domain\u2026 a world of infinite blueprints. A Multiverse known as Ultra Kingdoms',
-    'Beyond the golden shimmer lies the Broker\u2019s endless platforms and marketplaces\u2026 where anything has a price.',
-    'Through the crimson veil you see the Warden\u2019s iron fortress\u2026 where order is absolute.',
+    'Beyond the golden shimmer lies the Broker\u2019s endless platforms and marketplaces\u2026 where anything has a price, and everyone can profit.',
+    'Through the crimson veil you see the Warden\u2019s iron fortress\u2026 where order is absolute. Child protections, AI safety controls are just the beginning',
     'The blue gateway reveals the Navigator\u2019s star charts\u2026 mapping paths through the multiverse.',
     'Purple shadows swirl revealing the Syndicate\u2019s hidden network\u2026 power flows in the darkness.',
     'Emerald light pulses as the Oracle\u2019s visions unfold\u2026 the future is taking shape.',

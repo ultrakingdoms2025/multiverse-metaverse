@@ -282,22 +282,41 @@ export function createModal(callbacks) {
         }
         if (section.cards && section.cards.length > 0) {
           const isPyramid = section.layout === 'pyramid';
+          const isHoneycomb = section.layout === 'honeycomb';
           const scale = state.fontScale || 1;
-          const size = (isPyramid ? 100 : 72) * scale;
+          const size = (isPyramid ? 100 : isHoneycomb ? 90 : 72) * scale;
 
           const hexGrid = document.createElement('div');
           if (isPyramid) {
             hexGrid.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;margin:12px 0;';
+          } else if (isHoneycomb) {
+            hexGrid.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:2px;margin:12px 0;';
           } else {
             hexGrid.style.cssText = 'display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:12px 0;';
           }
 
-          // For pyramid, split cards into rows: 3, 2, 1
-          const pyramidRows = isPyramid ? [
-            section.cards.slice(0, 3),
-            section.cards.slice(3, 5),
-            section.cards.slice(5, 6),
-          ] : [section.cards];
+          // Split cards into rows based on layout
+          let pyramidRows;
+          if (isPyramid) {
+            pyramidRows = [
+              section.cards.slice(0, 3),
+              section.cards.slice(3, 5),
+              section.cards.slice(5, 6),
+            ];
+          } else if (isHoneycomb) {
+            // Alternating rows: 4, 3, 4, 3... or fit to count
+            const rows = [];
+            let idx = 0;
+            let rowSize = 4;
+            while (idx < section.cards.length) {
+              rows.push(section.cards.slice(idx, idx + rowSize));
+              idx += rowSize;
+              rowSize = rowSize === 4 ? 3 : 4;
+            }
+            pyramidRows = rows;
+          } else {
+            pyramidRows = [section.cards];
+          }
 
           const detailPanel = document.createElement('div');
           detailPanel.style.cssText = 'margin:10px 0;padding:0;max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.4s ease;border-radius:8px;';
@@ -311,16 +330,17 @@ export function createModal(callbacks) {
             hex.style.cssText = `width:${size}px;height:${size * 1.15}px;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:rgba(0,20,40,0.8);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.3s,filter 0.3s;position:relative;perspective:200px;`;
 
             const inner = document.createElement('div');
-            inner.style.cssText = `position:absolute;inset:2px;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:rgba(0,15,30,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${isPyramid ? '4' : '2'}px;padding:4px;transition:transform 0.6s ease;transform-origin:left center;`;
+            const isLarge = isPyramid || isHoneycomb;
+            inner.style.cssText = `position:absolute;inset:2px;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:rgba(0,15,30,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${isLarge ? '4' : '2'}px;padding:4px;transition:transform 0.6s ease;transform-origin:left center;`;
 
             const iconEl = document.createElement('div');
             iconEl.textContent = card.icon || '';
-            iconEl.style.cssText = `font-size:${(isPyramid ? 28 : 18) * scale}px;line-height:1;`;
+            iconEl.style.cssText = `font-size:${(isLarge ? 24 : 18) * scale}px;line-height:1;`;
             inner.appendChild(iconEl);
 
             const titleEl = document.createElement('div');
             titleEl.textContent = card.title;
-            titleEl.style.cssText = `font-size:${(isPyramid ? 10 : 7) * scale}px;color:#ccc;text-align:center;line-height:1.2;font-weight:bold;padding:0 4px;`;
+            titleEl.style.cssText = `font-size:${(isLarge ? 12 : 7) * scale}px;color:#ccc;text-align:center;line-height:1.2;font-weight:bold;padding:0 6px;`;
             inner.appendChild(titleEl);
 
             // Page fold corner
@@ -391,15 +411,20 @@ export function createModal(callbacks) {
           }
 
           // Build rows
+          let rowIndex = 0;
           pyramidRows.forEach(rowCards => {
-            if (isPyramid) {
+            if (isPyramid || isHoneycomb) {
               const row = document.createElement('div');
-              row.style.cssText = 'display:flex;justify-content:center;gap:6px;';
+              const gap = isHoneycomb ? '4px' : '6px';
+              const offset = isHoneycomb && rowIndex % 2 === 1 ? `margin-top:-${size * 0.15}px;` : isHoneycomb ? `margin-top:-${size * 0.15}px;` : '';
+              const firstRow = rowIndex === 0 ? '' : offset;
+              row.style.cssText = `display:flex;justify-content:center;gap:${gap};${firstRow}`;
               rowCards.forEach(card => {
                 createHexCard(card, globalCardIndex, row);
                 globalCardIndex++;
               });
               hexGrid.appendChild(row);
+              rowIndex++;
             } else {
               rowCards.forEach(card => {
                 createHexCard(card, globalCardIndex, hexGrid);
