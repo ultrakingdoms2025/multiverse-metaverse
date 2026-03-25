@@ -110,10 +110,10 @@ export function createPortals(scene, spline) {
       })
     );
     torus.position.copy(pos); torus.position.y = 6;
-    // Offset portal 2 (red/Warden) to the right side
+    // Offset portal 2 (red/Warden) to the right side — keep clear of buildings
     if (i === 2) {
       const side = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
-      torus.position.add(side.multiplyScalar(2));
+      torus.position.add(side.multiplyScalar(1));
     }
     torus.lookAt(pos.clone().add(tangent));
     scene.add(torus);

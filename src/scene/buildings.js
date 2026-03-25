@@ -50,12 +50,25 @@ export function createBuildings(scene, spline) {
     return { z: pos.z, color: npc.color };
   });
 
+  // Portal positions to keep buildings clear
+  const portalTValues = [0.09, 0.22, 0.40, 0.55, 0.70, 0.83];
+  const portalPositions = portalTValues.map(t => spline.getPointAt(t));
+
   for (let i = 0; i < 80; i++) {
     const side = i % 2 === 0 ? -1 : 1;
-    const depth = Math.random() * 70 - 10;
+    let depth = Math.random() * 70 - 10;
     const width = 3 + Math.random() * 5;
     const height = 8 + Math.random() * 35;
-    const offsetX = side * (9 + Math.random() * 10);
+    let offsetX = side * (9 + Math.random() * 10);
+
+    // Push buildings away from portal positions
+    for (const pp of portalPositions) {
+      const dz = Math.abs(depth - pp.z);
+      const dx = Math.abs(offsetX - pp.x);
+      if (dz < 5 && dx < 8) {
+        offsetX = side * (12 + Math.random() * 8);
+      }
+    }
 
     // Find the nearest NPC to this building
     let nearestNpc = null;

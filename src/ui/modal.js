@@ -278,6 +278,31 @@ export function createModal(callbacks) {
           wrapper.appendChild(nextBtn);
 
           layoutSlides();
+
+          // Auto-rotate every 3 seconds
+          let autoRotate = setInterval(() => {
+            activeIndex = (activeIndex + 1) % count;
+            layoutSlides();
+          }, 3000);
+
+          // Pause on hover, resume on leave
+          wrapper.addEventListener('mouseenter', () => clearInterval(autoRotate));
+          wrapper.addEventListener('mouseleave', () => {
+            autoRotate = setInterval(() => {
+              activeIndex = (activeIndex + 1) % count;
+              layoutSlides();
+            }, 3000);
+          });
+
+          // Clean up when modal closes
+          const carouselObserver = new MutationObserver(() => {
+            if (layer.style.display === 'none') {
+              clearInterval(autoRotate);
+              carouselObserver.disconnect();
+            }
+          });
+          carouselObserver.observe(layer, { attributes: true, attributeFilter: ['style'] });
+
           layer.appendChild(wrapper);
         }
         if (section.cards && section.cards.length > 0) {

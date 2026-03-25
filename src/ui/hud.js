@@ -6,9 +6,11 @@ export function createHud(callbacks) {
   const container = document.getElementById('hud-layer');
 
   const titleDiv = document.createElement('div'); titleDiv.className = 'hud-title';
-  const h1 = document.createElement('h1'); h1.textContent = 'ULTRA KINGDOMS';
-  const tagline = document.createElement('div'); tagline.className = 'tagline'; tagline.textContent = 'ENTER THE MULTIVERSE';
-  titleDiv.appendChild(h1); titleDiv.appendChild(tagline); container.appendChild(titleDiv);
+  const logoImg = document.createElement('img');
+  logoImg.src = '/uklogo.png';
+  logoImg.alt = 'Ultra Kingdoms';
+  logoImg.style.cssText = 'height:60px;object-fit:contain;';
+  titleDiv.appendChild(logoImg); container.appendChild(titleDiv);
 
   const audioDiv = document.createElement('div'); audioDiv.className = 'hud-audio';
   const audioBtn = document.createElement('button'); audioBtn.textContent = '\u{1F50A} OFF';
