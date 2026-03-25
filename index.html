@@ -15,7 +15,7 @@
       transition: opacity 0.6s ease;
     }
     #experience-chooser.fade-out { opacity: 0; pointer-events: none; }
-    .chooser-logo { max-width: 220px; margin-bottom: 12px; }
+    .chooser-logo { max-width: 1000px; width: 80%; margin-bottom: 24px; }
     .chooser-title { color: #fff; font-size: 28px; letter-spacing: 4px; margin-bottom: 6px; text-shadow: 0 0 20px rgba(0,255,255,0.3); }
     .chooser-subtitle { color: #888; font-size: 13px; letter-spacing: 2px; margin-bottom: 40px; }
     .chooser-options { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
@@ -52,7 +52,7 @@
   <!-- Experience Chooser -->
   <div id="experience-chooser">
     <img src="/uklogo.png" alt="Ultra Kingdoms" class="chooser-logo" />
-    <div class="chooser-title">ULTRA KINGDOMS</div>
+
     <div class="chooser-subtitle">CHOOSE YOUR EXPERIENCE</div>
     <div class="chooser-options">
       <div class="chooser-card" id="choose-traditional">
@@ -64,8 +64,8 @@
       <div class="chooser-card" id="choose-ultra">
         <div class="card-icon">&#127918;</div>
         <div class="card-title">Ultra Experience</div>
-        <div class="card-desc">Immersive 3D journey through the multiverse. Explore NPCs, portals, and the cyberpunk city.</div>
-        <div class="card-badge badge-ultra">WebGL 3D</div>
+        <div class="card-desc">Immersive 3D journey through the multiverse. Explore NPCs, portals, and more.</div></br>
+        <div class="card-badge badge-ultra">Ultra Kingdoms</div>
       </div>
     </div>
   </div>
@@ -88,6 +88,12 @@
     const tradBtn = document.getElementById('choose-traditional');
     const ultraBtn = document.getElementById('choose-ultra');
     const tradFrame = document.getElementById('traditional-frame');
+
+    // Auto-redirect mobile to traditional site
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 1024;
+    if (isMobile) {
+      window.location.href = '/traditional/index.html';
+    }
 
     tradBtn.addEventListener('click', () => {
       chooser.classList.add('fade-out');
