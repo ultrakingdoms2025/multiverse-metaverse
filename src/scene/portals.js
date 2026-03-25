@@ -67,9 +67,9 @@ const PORTAL_COLORS = [
   new THREE.Color(0x00ffaa),
 ];
 
-function createPortalVideo() {
+function createPortalVideo(src) {
   const video = document.createElement('video');
-  video.src = '/overlay.mp4';
+  video.src = src || '/overlay.mp4';
   video.crossOrigin = 'anonymous';
   video.loop = true;
   video.muted = true;
@@ -88,7 +88,8 @@ export function createPortals(scene, spline) {
   const portalTValues = [0.09, 0.22, 0.40, 0.55, 0.70, 0.83];
 
   // Each portal gets its own video element and texture for future customization
-  const portalVideos = portalTValues.map(() => createPortalVideo());
+  const portalVideoSources = ['/overlay.mp4', '/broker.mp4', '/overlay.mp4', '/overlay.mp4', '/overlay.mp4', '/overlay.mp4'];
+  const portalVideos = portalTValues.map((_, i) => createPortalVideo(portalVideoSources[i]));
   const videoTextures = portalVideos.map(video => {
     const tex = new THREE.VideoTexture(video);
     tex.minFilter = THREE.LinearFilter;
@@ -135,7 +136,23 @@ export function createPortals(scene, spline) {
     const light = new THREE.PointLight(PORTAL_COLORS[i], 0.8, 15);
     light.position.copy(pos); light.position.y = 6;
     scene.add(light);
-    portals.push({ torus, fill, light });
+
+    // "Click Me" sprite for hover
+    const labelCanvas = document.createElement('canvas');
+    labelCanvas.width = 256; labelCanvas.height = 64;
+    const labelCtx = labelCanvas.getContext('2d');
+    labelCtx.font = 'bold 32px monospace';
+    labelCtx.textAlign = 'center';
+    const hexStr = '#' + PORTAL_COLORS[i].getHexString();
+    labelCtx.fillStyle = hexStr;
+    labelCtx.fillText('Click Me', 128, 42);
+    const labelTex = new THREE.CanvasTexture(labelCanvas);
+    const labelSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: labelTex, transparent: true, opacity: 0, depthWrite: false }));
+    labelSprite.position.copy(torus.position);
+    labelSprite.scale.set(3, 0.75, 1);
+    scene.add(labelSprite);
+
+    portals.push({ torus, fill, light, labelSprite, hovered: false });
   });
 
   // All portal fills are clickable
@@ -148,8 +165,18 @@ export function createPortals(scene, spline) {
       const speed = 0.3 + i * 0.05;
       p.torus.rotateZ(speed * 0.016);
       p.fill.rotateZ(speed * 0.016);
+
+      // Fade "Click Me" label on hover
+      const targetOpacity = p.hovered ? 1.0 : 0.0;
+      const cur = p.labelSprite.material.opacity;
+      p.labelSprite.material.opacity += (targetOpacity - cur) * 0.1;
     });
   }
+
+  function setHovered(index) {
+    portals.forEach((p, i) => { p.hovered = i === index; });
+  }
+
   function setSyncPulse(enabled) { /* Future: sync all portal pulse phases */ }
-  return { portals, clickableFills, update, setSyncPulse };
+  return { portals, clickableFills, update, setHovered, setSyncPulse };
 }

@@ -259,18 +259,31 @@ function init() {
     cameraRail.update(dt);
     state._cameraPosition = camera.position.clone();
 
-    // Hover detection for NPCs
+    // Hover detection for NPCs and portals
     if (!state.modalOpen) {
       const hoverMouse = new THREE.Vector2(state.mouse.x, state.mouse.y);
       raycaster.setFromCamera(hoverMouse, camera);
+
+      // Check portals
+      const portalHoverHits = raycaster.intersectObjects(portals.clickableFills, false);
+      if (portalHoverHits.length > 0 && portalHoverHits[0].object.userData.portalVideo) {
+        portals.setHovered(portalHoverHits[0].object.userData.portalIndex);
+        renderer.domElement.style.cursor = 'pointer';
+      } else {
+        portals.setHovered(-1);
+      }
+
+      // Check NPCs
       const hoverHits = raycaster.intersectObjects(npcManager.hitSpheres, false);
       if (hoverHits.length > 0) {
         const idx = hoverHits[0].object.userData.npcIndex;
         npcManager.setHovered(idx);
         renderer.domElement.style.cursor = 'pointer';
-      } else {
+      } else if (!(portalHoverHits.length > 0)) {
         npcManager.setHovered(-1);
         renderer.domElement.style.cursor = 'default';
+      } else {
+        npcManager.setHovered(-1);
       }
     }
 
