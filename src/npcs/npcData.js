@@ -23,7 +23,7 @@ export const NPC_DATA = [
         { value: 3, suffix: '+', label: 'Years Building', sublabel: 'Founder-funded & debt-free' },
         { value: 7, suffix: '', label: 'Patents Granted', sublabel: 'Globally recognized' },
       ]},
-      { tagline: 'While others are still figuring it out, we spent three years building it.' },
+      { tagline: 'While others are still figuring it out, we built it.' },
     ] },
   { name: 'The Broker', color: new THREE.Color(0xffaa00), hexColor: '#ffaa00', stationIndex: 1, visualType: 'ticker',
     quote: 'Ultra Kingdoms is a platform built to be an interoperable Multiverse Metaverse ecosystem that addresses the key layers of any metaverse, providing a rich and engaging experience for its players.',
