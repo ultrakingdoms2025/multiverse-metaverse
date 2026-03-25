@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { state } from '../state/gameState.js';
 
 const groundVert = `
   varying vec2 vUv;
@@ -26,7 +27,7 @@ const groundFrag = `
     vec3 video = texture2D(uVideo, uv).rgb;
 
     // Darken to floor level
-    video *= 0.35;
+    video *= 0.24;
 
     // Subtle reflection sheen
     float reflection = uReflectivity * 0.03;
@@ -101,7 +102,13 @@ export function createGround(scene, renderer) {
   function initialCapture() { cubeCamera.update(renderer, scene); }
 
   function update(time) {
-    groundMat.uniforms.uTime.value = time;
+    if (state.reducedMotion) {
+      groundMat.uniforms.uTime.value = 0;
+      groundMat.uniforms.uVideo.value = null;
+    } else {
+      groundMat.uniforms.uTime.value = time;
+      groundMat.uniforms.uVideo.value = videoTexture;
+    }
   }
 
   return { ground, updateEnvMap, initialCapture, update };

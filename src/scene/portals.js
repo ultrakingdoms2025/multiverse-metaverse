@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { state } from '../state/gameState.js';
 
 const portalFrag = `
   uniform float uTime; uniform vec3 uColor; varying vec2 vUv;
@@ -88,7 +89,7 @@ export function createPortals(scene, spline) {
   const portalTValues = [0.09, 0.22, 0.40, 0.55, 0.70, 0.83];
 
   // Each portal gets its own video element and texture for future customization
-  const portalVideoSources = ['/overlay.mp4', '/broker.mp4', '/overlay.mp4', '/overlay.mp4', '/overlay.mp4', '/overlay.mp4'];
+  const portalVideoSources = ['/overlay.mp4', '/broker.mp4', '/warden.mp4', '/overlay.mp4', '/overlay.mp4', '/overlay.mp4'];
   const portalVideos = portalTValues.map((_, i) => createPortalVideo(portalVideoSources[i]));
   const videoTextures = portalVideos.map(video => {
     const tex = new THREE.VideoTexture(video);
@@ -162,9 +163,11 @@ export function createPortals(scene, spline) {
     timeUniform.value = time;
     portals.forEach((p, i) => {
       // Slow spin around the portal's forward axis
-      const speed = 0.3 + i * 0.05;
-      p.torus.rotateZ(speed * 0.016);
-      p.fill.rotateZ(speed * 0.016);
+      if (!state.reducedMotion) {
+        const speed = 0.3 + i * 0.05;
+        p.torus.rotateZ(speed * 0.016);
+        p.fill.rotateZ(speed * 0.016);
+      }
 
       // Fade "Click Me" label on hover
       const targetOpacity = p.hovered ? 1.0 : 0.0;

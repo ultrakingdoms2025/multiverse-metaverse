@@ -50,10 +50,12 @@ export function createNpcManager(scene, spline) {
   function update(time, dt, currentT) {
     state.activeNpcIndex = getActiveStation(currentT);
     npcs.forEach((npc, i) => {
-      // Idle bob — smooth floating motion
-      const bobSpeed = 0.8 + i * 0.1;
-      const bobAmount = 0.15 + Math.sin(time * 0.5 + i) * 0.05;
-      npc.group.position.y = npc.baseY + Math.sin(time * bobSpeed + i * 1.2) * bobAmount;
+      // Idle bob — smooth floating motion (skip if reduced motion)
+      if (!state.reducedMotion) {
+        const bobSpeed = 0.8 + i * 0.1;
+        const bobAmount = 0.15 + Math.sin(time * 0.5 + i) * 0.05;
+        npc.group.position.y = npc.baseY + Math.sin(time * bobSpeed + i * 1.2) * bobAmount;
+      }
 
       // Idle rotation — slow spin when not facing camera
       const isActive = i === state.activeNpcIndex;
@@ -67,24 +69,28 @@ export function createNpcManager(scene, spline) {
         const look = state._cameraPosition.clone(); look.y = npc.group.position.y;
         const tmp = new THREE.Object3D(); tmp.position.copy(npc.group.position); tmp.lookAt(look);
         npc.group.quaternion.slerp(tmp.quaternion, Math.min(dt * 6, 1));
-      } else {
+      } else if (!state.reducedMotion) {
         // Slow idle spin when inactive
         npc.group.rotation.y += dt * 0.4;
       }
 
-      // Hologram flicker — brief emissive spikes
-      if (Math.random() < 0.005) {
+      // Hologram flicker — brief emissive spikes (skip if reduced motion)
+      if (!state.reducedMotion && Math.random() < 0.005) {
         npc.material.uniforms.uEmissiveMultiplier.value = 2.5;
       }
-      const arr = npc.orbitGeo.attributes.position.array;
-      for (let j = 0; j < npc.orbitCount; j++) {
-        const angle = time * 1.5 + (j / npc.orbitCount) * Math.PI * 2;
-        const r = 1.2 + Math.sin(time * 2 + j) * 0.3;
-        arr[j * 3] = npc.orbitCenter.x + Math.cos(angle) * r;
-        arr[j * 3 + 1] = 1.0 + Math.sin(time * 1.5 + j * 0.5) * 0.5;
-        arr[j * 3 + 2] = npc.orbitCenter.z + Math.sin(angle) * r;
+
+      // Orbit particles (skip if reduced motion)
+      if (!state.reducedMotion) {
+        const arr = npc.orbitGeo.attributes.position.array;
+        for (let j = 0; j < npc.orbitCount; j++) {
+          const angle = time * 1.5 + (j / npc.orbitCount) * Math.PI * 2;
+          const r = 1.2 + Math.sin(time * 2 + j) * 0.3;
+          arr[j * 3] = npc.orbitCenter.x + Math.cos(angle) * r;
+          arr[j * 3 + 1] = 1.0 + Math.sin(time * 1.5 + j * 0.5) * 0.5;
+          arr[j * 3 + 2] = npc.orbitCenter.z + Math.sin(angle) * r;
+        }
+        npc.orbitGeo.attributes.position.needsUpdate = true;
       }
-      npc.orbitGeo.attributes.position.needsUpdate = true;
 
       // Hover effect — fade name label and boost glow
       const targetHover = npc.hovered ? 1.0 : 0.0;

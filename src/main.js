@@ -26,6 +26,7 @@ import { state, STATION_COUNT } from './state/gameState.js';
 import { createStatsPanel } from './ui/statsPanel.js';
 import { createMinimap } from './ui/minimap.js';
 import { createSocialPanel } from './ui/socialPanel.js';
+import { createAccessibilityPanel } from './ui/accessibility.js';
 
 function isMobile() {
   // Only check viewport width — 'ontouchstart' is true on touch-enabled Windows desktops
@@ -128,6 +129,7 @@ function init() {
   const statsPanel = createStatsPanel();
   const minimap = createMinimap(spline, (i) => cameraRail.goToStation(i));
   const socialPanel = createSocialPanel();
+  const a11y = createAccessibilityPanel();
   // const prompt = createInteractionPrompt();
   const modal = createModal({ onOracleFirstClose: () => finalCta.show() });
   const finalCta = createFinalCta({
@@ -153,14 +155,15 @@ function init() {
   // Portal video modals — one per portal for independent customization
   const portalNames = ['The Architect\'s Realm', 'The Broker\'s Market', 'The Warden\'s Fortress', 'The Navigator\'s Voyage', 'The Syndicate\'s Underworld', 'The Oracle\'s Vision'];
   const portalDescs = [
-    'You peer through the shimmering portal and glimpse the Architect\u2019s domain\u2026 a world of infinite blueprints.',
-    'Beyond the golden shimmer lies the Broker\u2019s endless marketplace\u2026 where anything has a price.',
+    'You peer through the shimmering portal and glimpse the Architect\u2019s domain\u2026 a world of infinite blueprints. A Multiverse known as Ultra Kingdoms',
+    'Beyond the golden shimmer lies the Broker\u2019s endless platforms and marketplaces\u2026 where anything has a price.',
     'Through the crimson veil you see the Warden\u2019s iron fortress\u2026 where order is absolute.',
     'The blue gateway reveals the Navigator\u2019s star charts\u2026 mapping paths through the multiverse.',
     'Purple shadows swirl revealing the Syndicate\u2019s hidden network\u2026 power flows in the darkness.',
     'Emerald light pulses as the Oracle\u2019s visions unfold\u2026 the future is taking shape.',
   ];
   const portalHexColors = ['#00ffff', '#ffaa00', '#ff0044', '#4488ff', '#aa00ff', '#00ffaa'];
+  const portalVideoSources = ['/overlay.mp4', '/broker.mp4', '/warden.mp4', '/overlay.mp4', '/overlay.mp4', '/overlay.mp4'];
 
   const portalModals = [];
   const portalVids = [];
@@ -195,7 +198,7 @@ function init() {
     desc.style.cssText = 'margin:0 0 16px;color:#ccc;font-family:monospace;font-size:14px;line-height:1.6;';
     pm.appendChild(desc);
     const vid = document.createElement('video');
-    vid.src = '/overlay.mp4';
+    vid.src = portalVideoSources[pi];
     vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true;
     vid.style.cssText = `width:100%;border-radius:8px;border:1px solid ${color}55;`;
     pm.appendChild(vid);

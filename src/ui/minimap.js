@@ -3,7 +3,7 @@ import { NPC_DATA } from '../npcs/npcData.js';
 
 export function createMinimap(spline, onGoToStation) {
   const container = document.createElement('div');
-  container.style.cssText = 'position:fixed;bottom:12px;left:12px;z-index:14;';
+  container.style.cssText = 'position:fixed;bottom:55px;left:12px;z-index:14;';
   document.body.appendChild(container);
 
   const canvas = document.createElement('canvas');
