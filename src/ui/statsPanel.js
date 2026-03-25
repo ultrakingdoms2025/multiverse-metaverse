@@ -51,6 +51,8 @@ export function createStatsPanel() {
     return div;
   }
 
+  const playersOnline = Math.floor(Math.random() * 401) + 100;
+
   function updateContent() {
     content.textContent = '';
 
@@ -58,12 +60,8 @@ export function createStatsPanel() {
     content.appendChild(createRow('Version', '1.0.0'));
 
     content.appendChild(createSection('MULTIVERSE'));
-    content.appendChild(createRow('Worlds online', '3'));
-    content.appendChild(createRow('Players online', '127'));
-
-    content.appendChild(createSection('SESSION'));
-    content.appendChild(createRow('Stations visited', String(state.visitedStations.size)));
-    content.appendChild(createRow('Current station', String(state.currentStation)));
+    content.appendChild(createRow('Worlds online', '22'));
+    content.appendChild(createRow('Players online', String(playersOnline)));
   }
 
   return { toggle, updateContent };
