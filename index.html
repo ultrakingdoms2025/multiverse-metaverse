@@ -6,16 +6,108 @@
   <title>Ultra Kingdoms — Enter the Multiverse</title>
   <link rel="icon" href="/favicon.ico" />
   <link rel="stylesheet" href="/src/styles/main.css" />
+  <style>
+    #experience-chooser {
+      position: fixed; inset: 0; z-index: 9999;
+      background: radial-gradient(ellipse at center, #0a0025 0%, #020010 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-family: 'Orbitron', monospace, sans-serif;
+      transition: opacity 0.6s ease;
+    }
+    #experience-chooser.fade-out { opacity: 0; pointer-events: none; }
+    .chooser-logo { max-width: 220px; margin-bottom: 12px; }
+    .chooser-title { color: #fff; font-size: 28px; letter-spacing: 4px; margin-bottom: 6px; text-shadow: 0 0 20px rgba(0,255,255,0.3); }
+    .chooser-subtitle { color: #888; font-size: 13px; letter-spacing: 2px; margin-bottom: 40px; }
+    .chooser-options { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+    .chooser-card {
+      width: 240px; padding: 30px 20px; border-radius: 14px; text-align: center; cursor: pointer;
+      background: rgba(0,15,30,0.7); border: 1px solid rgba(0,255,255,0.2);
+      transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    .chooser-card:hover {
+      border-color: #00ffff; transform: translateY(-4px);
+      box-shadow: 0 8px 40px rgba(0,255,255,0.2);
+    }
+    .chooser-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,255,255,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .card-icon { font-size: 40px; margin-bottom: 16px; }
+    .card-title { color: #fff; font-size: 16px; letter-spacing: 2px; margin-bottom: 10px; }
+    .card-desc { color: #999; font-size: 11px; line-height: 1.6; }
+    .card-badge {
+      display: inline-block; margin-top: 14px; padding: 4px 12px; border-radius: 12px;
+      font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .badge-classic { background: rgba(255,170,0,0.15); color: #ffaa00; border: 1px solid rgba(255,170,0,0.3); }
+    .badge-ultra { background: rgba(0,255,255,0.15); color: #00ffff; border: 1px solid rgba(0,255,255,0.3); }
+    #traditional-frame {
+      position: fixed; inset: 0; z-index: 9998; border: none; display: none;
+      width: 100%; height: 100%;
+    }
+  </style>
 </head>
 <body>
-  <div id="canvas-container"></div>
-  <div id="loading-screen"></div>
-  <div id="hud-layer"></div>
+  <!-- Experience Chooser -->
+  <div id="experience-chooser">
+    <img src="/uklogo.png" alt="Ultra Kingdoms" class="chooser-logo" />
+    <div class="chooser-title">ULTRA KINGDOMS</div>
+    <div class="chooser-subtitle">CHOOSE YOUR EXPERIENCE</div>
+    <div class="chooser-options">
+      <div class="chooser-card" id="choose-traditional">
+        <div class="card-icon">&#127760;</div>
+        <div class="card-title">Traditional</div>
+        <div class="card-desc">Browse our classic website with full information about Ultra Kingdoms, roadmaps, and documentation.</div>
+        <div class="card-badge badge-classic">Classic Web</div>
+      </div>
+      <div class="chooser-card" id="choose-ultra">
+        <div class="card-icon">&#127918;</div>
+        <div class="card-title">Ultra Experience</div>
+        <div class="card-desc">Immersive 3D journey through the multiverse. Explore NPCs, portals, and the cyberpunk city.</div>
+        <div class="card-badge badge-ultra">WebGL 3D</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Traditional site iframe -->
+  <iframe id="traditional-frame" src=""></iframe>
+
+  <!-- 3D Experience containers (hidden until chosen) -->
+  <div id="canvas-container" style="display:none"></div>
+  <div id="loading-screen" style="display:none"></div>
+  <div id="hud-layer" style="display:none"></div>
   <div id="interaction-prompt"></div>
   <div id="modal-backdrop"></div>
   <div id="modal-layer"></div>
   <div id="final-cta-overlay"></div>
   <div id="fallback-page"></div>
-  <script type="module" src="/src/main.js"></script>
+
+  <script type="module">
+    const chooser = document.getElementById('experience-chooser');
+    const tradBtn = document.getElementById('choose-traditional');
+    const ultraBtn = document.getElementById('choose-ultra');
+    const tradFrame = document.getElementById('traditional-frame');
+
+    tradBtn.addEventListener('click', () => {
+      chooser.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = '/traditional/index.html';
+      }, 600);
+    });
+
+    ultraBtn.addEventListener('click', () => {
+      chooser.classList.add('fade-out');
+      // Show 3D containers
+      document.getElementById('canvas-container').style.display = '';
+      document.getElementById('loading-screen').style.display = '';
+      document.getElementById('hud-layer').style.display = '';
+      setTimeout(() => {
+        chooser.style.display = 'none';
+        // Dynamically load the 3D experience
+        import('/src/main.js');
+      }, 600);
+    });
+  </script>
 </body>
 </html>
