@@ -183,6 +183,7 @@ function init() {
   for (let pi = 0; pi < portalNames.length; pi++) {
     const color = portalHexColors[pi];
     const pm = document.createElement('div');
+    pm.setAttribute('data-portal-modal', '');
     pm.style.cssText = `display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:20;background:rgba(0,10,20,0.85);border:1px solid ${color};border-radius:12px;padding:24px;max-width:500px;width:90%;box-shadow:0 0 40px ${color}44,inset 0 0 20px ${color}0d;backdrop-filter:blur(10px);`;
     const closeBtn = document.createElement('button');
     closeBtn.textContent = '\u00D7';

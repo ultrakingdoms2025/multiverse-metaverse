@@ -282,7 +282,8 @@ export function createModal(callbacks) {
         }
         if (section.cards && section.cards.length > 0) {
           const isPyramid = section.layout === 'pyramid';
-          const size = isPyramid ? 100 : 72;
+          const scale = state.fontScale || 1;
+          const size = (isPyramid ? 100 : 72) * scale;
 
           const hexGrid = document.createElement('div');
           if (isPyramid) {
@@ -314,12 +315,12 @@ export function createModal(callbacks) {
 
             const iconEl = document.createElement('div');
             iconEl.textContent = card.icon || '';
-            iconEl.style.cssText = `font-size:${isPyramid ? '28' : '18'}px;line-height:1;`;
+            iconEl.style.cssText = `font-size:${(isPyramid ? 28 : 18) * scale}px;line-height:1;`;
             inner.appendChild(iconEl);
 
             const titleEl = document.createElement('div');
             titleEl.textContent = card.title;
-            titleEl.style.cssText = `font-size:${isPyramid ? '10' : '7'}px;color:#ccc;text-align:center;line-height:1.2;font-weight:bold;padding:0 4px;`;
+            titleEl.style.cssText = `font-size:${(isPyramid ? 10 : 7) * scale}px;color:#ccc;text-align:center;line-height:1.2;font-weight:bold;padding:0 4px;`;
             inner.appendChild(titleEl);
 
             // Page fold corner

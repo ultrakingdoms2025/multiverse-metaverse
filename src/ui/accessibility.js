@@ -1,14 +1,28 @@
 import { state } from '../state/gameState.js';
 
 export function createAccessibilityPanel() {
+  // Inject dynamic scaling styles for modals and portal popups
+  const scaleStyle = document.createElement('style');
+  scaleStyle.textContent = [
+    ':root { --font-scale: 1; }',
+    '#modal-layer { font-size: calc(16px * var(--font-scale)); }',
+    '#modal-layer .modal-npc-name { font-size: calc(1.6rem * var(--font-scale)); }',
+    '#modal-layer .modal-quote { font-size: calc(1.05rem * var(--font-scale)); }',
+    '#modal-layer .modal-features li { font-size: calc(1rem * var(--font-scale)); }',
+    '[data-portal-modal] { font-size: calc(14px * var(--font-scale)); }',
+    '[data-portal-modal] h2 { font-size: calc(20px * var(--font-scale)) !important; }',
+    '[data-portal-modal] p { font-size: calc(14px * var(--font-scale)) !important; }',
+  ].join('\n');
+  document.head.appendChild(scaleStyle);
+
   const tab = document.createElement('div');
-  tab.style.cssText = 'position:fixed;left:0;bottom:12px;z-index:15;cursor:pointer;background:rgba(0,10,20,0.85);border:1px solid rgba(0,255,255,0.3);border-left:none;border-radius:0 8px 8px 0;padding:8px 6px;color:#00ffff;font-size:18px;backdrop-filter:blur(8px);transition:opacity 0.3s;';
+  tab.style.cssText = 'position:fixed;left:0;bottom:12px;z-index:100;cursor:pointer;background:rgba(0,10,20,0.85);border:1px solid rgba(0,255,255,0.3);border-left:none;border-radius:0 8px 8px 0;padding:8px 6px;color:#00ffff;font-size:18px;backdrop-filter:blur(8px);transition:opacity 0.3s;';
   tab.textContent = '\u267F';
   tab.title = 'Accessibility';
   document.body.appendChild(tab);
 
   const panel = document.createElement('div');
-  panel.style.cssText = 'display:none;position:fixed;left:12px;bottom:50px;z-index:16;width:260px;background:rgba(0,10,20,0.95);border:1px solid rgba(0,255,255,0.3);border-radius:12px;padding:20px;font-family:monospace;color:#ccc;font-size:12px;backdrop-filter:blur(12px);box-shadow:0 0 30px rgba(0,255,255,0.1);';
+  panel.style.cssText = 'display:none;position:fixed;left:12px;bottom:50px;z-index:100;width:260px;background:rgba(0,10,20,0.95);border:1px solid rgba(0,255,255,0.3);border-radius:12px;padding:20px;font-family:monospace;color:#ccc;font-size:12px;backdrop-filter:blur(12px);box-shadow:0 0 30px rgba(0,255,255,0.1);';
   document.body.appendChild(panel);
 
   const title = document.createElement('div');
@@ -20,7 +34,20 @@ export function createAccessibilityPanel() {
   let currentFontScale = 1;
   let currentColorMode = 'normal';
 
-  tab.addEventListener('click', () => {
+  // Prevent clicks on panel from closing modals/backdrops
+  panel.addEventListener('click', (e) => {
+    e.stopPropagation();
+    // If click was directly on the panel background (not a child button/control), close it
+    if (e.target === panel) {
+      open = false;
+      panel.style.display = 'none';
+    }
+  });
+  panel.addEventListener('mousedown', (e) => e.stopPropagation());
+  tab.addEventListener('mousedown', (e) => e.stopPropagation());
+
+  tab.addEventListener('click', (e) => {
+    e.stopPropagation();
     open = !open;
     panel.style.display = open ? 'block' : 'none';
   });
@@ -50,7 +77,9 @@ export function createAccessibilityPanel() {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       currentFontScale = fs.scale;
+      state.fontScale = fs.scale;
       document.documentElement.style.fontSize = (16 * fs.scale) + 'px';
+      document.documentElement.style.setProperty('--font-scale', fs.scale);
       fontBtns.querySelectorAll('button').forEach(b => {
         b.style.borderColor = 'rgba(0,255,255,0.3)';
         b.style.color = '#ccc';
@@ -145,7 +174,9 @@ export function createAccessibilityPanel() {
     currentColorMode = 'normal';
     reducedMotion = false;
     state.reducedMotion = false;
+    state.fontScale = 1.0;
     document.documentElement.style.fontSize = '';
+    document.documentElement.style.setProperty('--font-scale', 1);
     document.documentElement.style.filter = 'none';
     document.documentElement.classList.remove('reduce-motion');
     motionBtn.textContent = 'Reduce Motion: OFF';

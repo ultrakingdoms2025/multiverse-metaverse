@@ -2,7 +2,7 @@ export const state = {
   currentStation: 0, targetStation: 0, isTransitioning: false,
   visitedStations: new Set(), modalOpen: false, modalNpcIndex: -1,
   activeNpcIndex: -1, finalCtaTriggered: false, finalCtaShown: false,
-  audioPlaying: false, audioLoaded: false, sceneReady: false, reducedMotion: false,
+  audioPlaying: false, audioLoaded: false, sceneReady: false, reducedMotion: false, fontScale: 1.0,
   bloomStrength: 0.6, bloomRadius: 0.3, bloomThreshold: 0.7,
   mouse: { x: 0, y: 0 },
 };
