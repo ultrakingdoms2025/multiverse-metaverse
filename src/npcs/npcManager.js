@@ -38,13 +38,74 @@ export function createNpcManager(scene, spline) {
     nameCtx.fillText(data.name, 256, 42);
     const nameTex = new THREE.CanvasTexture(nameCanvas);
     const nameSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: nameTex, transparent: true, opacity: 0, depthWrite: false }));
-    nameSprite.position.y = 2.8;
+    nameSprite.position.y = 2.2;
     nameSprite.scale.set(3, 0.4, 1);
+    nameSprite.raycast = () => {}; // Don't intercept clicks
     group.add(nameSprite);
+
+    // Speech bubble — shows quote when NPC is active station
+    let speechSprite = null;
+    if (data.quote && data.stationIndex !== 6) {
+      const bubbleCanvas = document.createElement('canvas');
+      bubbleCanvas.width = 512; bubbleCanvas.height = 128;
+      const bCtx = bubbleCanvas.getContext('2d');
+
+      // Background
+      bCtx.fillStyle = 'rgba(0,10,20,0.85)';
+      bCtx.beginPath();
+      bCtx.rect(4, 4, 504, 110);
+      bCtx.fill();
+
+      // Border
+      bCtx.strokeStyle = data.hexColor;
+      bCtx.lineWidth = 2;
+      bCtx.beginPath();
+      bCtx.rect(4, 4, 504, 110);
+      bCtx.stroke();
+
+      // Text — wrap to fit
+      bCtx.fillStyle = '#cccccc';
+      bCtx.font = '14px monospace';
+      const words = data.quote.split(' ');
+      let line = '';
+      let y = 28;
+      const maxWidth = 480;
+      const lineHeight = 18;
+      for (const word of words) {
+        const test = line + word + ' ';
+        if (bCtx.measureText(test).width > maxWidth && line) {
+          bCtx.fillText(line.trim(), 20, y);
+          line = word + ' ';
+          y += lineHeight;
+          if (y > 100) break;
+        } else {
+          line = test;
+        }
+      }
+      if (line && y <= 100) bCtx.fillText(line.trim(), 20, y);
+
+      // Small triangle pointer at bottom
+      bCtx.fillStyle = 'rgba(0,10,20,0.85)';
+      bCtx.beginPath();
+      bCtx.moveTo(246, 114); bCtx.lineTo(256, 126); bCtx.lineTo(266, 114);
+      bCtx.fill();
+      bCtx.strokeStyle = data.hexColor;
+      bCtx.lineWidth = 2;
+      bCtx.beginPath();
+      bCtx.moveTo(246, 114); bCtx.lineTo(256, 126); bCtx.lineTo(266, 114);
+      bCtx.stroke();
+
+      const bubbleTex = new THREE.CanvasTexture(bubbleCanvas);
+      speechSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: bubbleTex, transparent: true, opacity: 0, depthWrite: false }));
+      speechSprite.position.y = 3.0;
+      speechSprite.scale.set(4, 1, 1);
+      speechSprite.raycast = () => {}; // Don't intercept clicks
+      group.add(speechSprite);
+    }
 
     npcPositions.push(npcPos.clone().setY(1.5));
     hitSpheres.push(hitSphere);
-    npcs.push({ group, material, baseY: npcPos.y, orbitGeo, orbitCount, orbitCenter: npcPos.clone(), nameSprite, hovered: false, hoverGlow: 0 });
+    npcs.push({ group, material, baseY: npcPos.y, orbitGeo, orbitCount, orbitCenter: npcPos.clone(), nameSprite, speechSprite, hovered: false, hoverGlow: 0 });
   });
 
   function update(time, dt, currentT) {
@@ -98,6 +159,13 @@ export function createNpcManager(scene, spline) {
       npc.nameSprite.material.opacity = npc.hoverGlow;
       if (npc.hovered) {
         npc.material.uniforms.uEmissiveMultiplier.value = Math.max(npc.material.uniforms.uEmissiveMultiplier.value, 1.5 + npc.hoverGlow * 0.5);
+      }
+
+      // Speech bubble — fade in when active and not transitioning, fade out otherwise
+      if (npc.speechSprite) {
+        const bubbleTarget = (isActive && !state.isTransitioning && !state.modalOpen) ? 0.9 : 0.0;
+        const curBubble = npc.speechSprite.material.opacity;
+        npc.speechSprite.material.opacity += (bubbleTarget - curBubble) * Math.min(dt * 3, 1);
       }
     });
   }

@@ -26,6 +26,7 @@ import { state, STATION_COUNT } from './state/gameState.js';
 import { createStatsPanel } from './ui/statsPanel.js';
 import { createMinimap } from './ui/minimap.js';
 import { createSocialPanel } from './ui/socialPanel.js';
+import { createStarfield } from './scene/starfield.js';
 import { createAccessibilityPanel } from './ui/accessibility.js';
 
 function isMobile() {
@@ -58,6 +59,7 @@ function init() {
   const spline = createSplinePath();
   loading.setProgress(0.2);
 
+  const starfield = createStarfield(scene);
   const buildings = createBuildings(scene, spline);
   loading.setProgress(0.3);
 
@@ -518,6 +520,7 @@ function init() {
     }
 
     npcManager.update(time, dt, cameraRail.getCurrentT());
+    starfield.update(time);
     buildings.update(time);
     billboards.update(time);
     portals.update(time);
@@ -536,9 +539,9 @@ function init() {
     // Show logo + poem at last station, hide HUD
     const atEnd = state.currentStation === STATION_COUNT - 1 && !state.isTransitioning;
     endLogo.style.opacity = atEnd ? '1' : '0';
+    endLogo.style.display = atEnd ? 'flex' : 'none';
     const hudLayer = document.getElementById('hud-layer');
     hudLayer.style.opacity = atEnd ? '0' : '1';
-    hudLayer.style.pointerEvents = atEnd ? 'none' : 'auto';
     hudLayer.style.visibility = atEnd ? 'hidden' : 'visible';
     if (atEnd) {
       startEndSequence();
