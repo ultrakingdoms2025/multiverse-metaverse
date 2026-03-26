@@ -66,7 +66,7 @@ export const NPC_DATA = [
       ], layout: 'honeycomb' },
     ] },
   { name: 'The Navigator', color: new THREE.Color(0x4488ff), hexColor: '#4488ff', stationIndex: 3, visualType: 'portal',
-    quote: 'Explore each of the Ultra Kingdoms worlds. The Navigator charts the paths between realms.',
+    quote: 'Explore each of the Ultra Kingdoms worlds. The Navigator charts the paths between realms. follow our partners and dive deeper into the multiverse.',
     features: [],
     sections: [
       { heading: 'EXPLORE THE WORLDS' },
@@ -96,7 +96,7 @@ export const NPC_DATA = [
       ], layout: 'pyramid' },
     ] },
   { name: 'The Oracle', color: new THREE.Color(0x00ffaa), hexColor: '#00ffaa', stationIndex: 5, visualType: 'timeline',
-    quote: 'Ultra Kingdoms delivers a revolutionary multiverse RPG experience, empowering players with seamless cross-world exploration, dynamic combat, rich social interaction, and persistent identity that truly belongs to them.',
+    quote: 'Ultra Kingdoms Oracle delivers a guided path through the revolutionary multiverse experience, empowering players with seamless cross-world exploration, dynamic combat, rich social interaction, and persistent identity that truly belongs to them.',
     features: [],
     sections: [
       { heading: 'GAMEPLAY & PLATFORMS' },

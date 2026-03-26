@@ -15,8 +15,13 @@ export function createFinalCta(callbacks) {
     overlay.appendChild(titleDiv);
     const subtitle = document.createElement('div'); subtitle.className = 'final-subtitle'; subtitle.textContent = 'THE MULTIVERSE AWAITS'; overlay.appendChild(subtitle);
     const btns = document.createElement('div'); btns.className = 'final-cta-buttons';
-    ['WISHLIST ON STEAM', 'JOIN DISCORD', 'SIGN UP FOR BETA'].forEach(text => {
-      const a = document.createElement('a'); a.href = '#'; a.textContent = text; btns.appendChild(a);
+    const ctaLinks = [
+      { text: 'WISHLIST ON STEAM', url: 'https://store.steampowered.com/app/2691250/Ultra_Kingdoms/' },
+      { text: 'JOIN DISCORD', url: 'https://discord.gg/dYhh83edPb' },
+      { text: 'SIGN UP FOR BETA', url: 'https://dashboard.ultrakingdoms.com' },
+    ];
+    ctaLinks.forEach(link => {
+      const a = document.createElement('a'); a.href = link.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = link.text; btns.appendChild(a);
     });
     overlay.appendChild(btns);
     overlay.style.display = 'flex';

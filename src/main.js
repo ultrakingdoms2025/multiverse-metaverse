@@ -163,7 +163,7 @@ function init() {
     'Emerald light pulses as the Oracle\u2019s visions unfold\u2026 the future is taking shape.',
   ];
   const portalHexColors = ['#00ffff', '#ffaa00', '#ff0044', '#4488ff', '#aa00ff', '#00ffaa'];
-  const portalVideoSources = ['/overlay.mp4', '/broker.mp4', '/warden.mp4', '/overlay.mp4', '/overlay.mp4', '/overlay.mp4'];
+  const portalVideoSources = ['/overlay.mp4', '/broker.mp4', '/warden.mp4', '/navigator.mp4', '/overlay.mp4', '/overlay.mp4'];
 
   const portalModals = [];
   const portalVids = [];
@@ -237,15 +237,241 @@ function init() {
     }
   });
 
-  // End-of-road logo overlay
+  // End-of-road logo + poem overlay
   const endLogo = document.createElement('div');
   endLogo.id = 'end-logo';
-  endLogo.style.cssText = 'position:fixed;inset:0;z-index:12;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 0.8s ease;background:#000;';
+  endLogo.style.cssText = 'position:fixed;inset:0;z-index:12;display:flex;flex-direction:column;align-items:center;pointer-events:none;opacity:0;transition:opacity 0.8s ease;background:#000;overflow:hidden;';
+
   const endLogoImg = document.createElement('img');
   endLogoImg.src = '/uklogo.png';
-  endLogoImg.style.cssText = 'max-width:50%;max-height:40%;filter:drop-shadow(0 0 30px rgba(255,170,0,0.6)) drop-shadow(0 0 60px rgba(255,170,0,0.3));border-radius:8px;';
+  endLogoImg.style.cssText = 'max-width:50%;max-height:40%;filter:drop-shadow(0 0 30px rgba(255,170,0,0.6)) drop-shadow(0 0 60px rgba(255,170,0,0.3));border-radius:8px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);transition:top 2s ease,max-width 1.5s ease,max-height 1.5s ease;';
   endLogo.appendChild(endLogoImg);
+
+  const poemContainer = document.createElement('div');
+  poemContainer.style.cssText = 'position:absolute;top:22%;left:50%;transform:translateX(-50%);width:80%;max-width:700px;max-height:72%;opacity:0;transition:opacity 1s ease;text-align:center;overflow-y:auto;scrollbar-width:none;pointer-events:auto;';
+  poemContainer.addEventListener('wheel', (e) => { e.stopPropagation(); }, { passive: true });
+
+  // Side icons flanking the poem
+  const sideIconsData = [
+    { icon: '\u{1F30C}', label: 'Multiverse', side: 'left' },
+    { icon: '\u{1F517}', label: 'Interoperable', side: 'left' },
+    { icon: '\u{1F3A8}', label: 'Creator\nEconomy', side: 'left' },
+    { icon: '\u{1F4BB}', label: 'Cross\nPlatform', side: 'left' },
+    { icon: '\u{1F4E6}', label: 'Asset\nPortability', side: 'left' },
+    { icon: '\u{1F310}', label: 'Open\nPlatform', side: 'right' },
+    { icon: '\u{1F3AE}', label: 'Ever\nExpanding\nGames', side: 'right' },
+    { icon: '\u{1F3D7}', label: 'Land\nOwnership', side: 'right' },
+    { icon: '\u{1F4B0}', label: 'Player-Driven\nEconomies', side: 'right' },
+    { icon: '\u{1F504}', label: 'Web2 &\nWeb3', side: 'right' },
+  ];
+
+  const leftIcons = document.createElement('div');
+  leftIcons.style.cssText = 'position:absolute;top:25%;left:50%;margin-left:-420px;display:flex;flex-direction:column;gap:28px;align-items:center;pointer-events:none;opacity:0;transition:opacity 1.5s ease;';
+
+  const rightIcons = document.createElement('div');
+  rightIcons.style.cssText = 'position:absolute;top:25%;left:50%;margin-left:390px;display:flex;flex-direction:column;gap:28px;align-items:center;pointer-events:none;opacity:0;transition:opacity 1.5s ease;';
+
+  sideIconsData.forEach((item, idx) => {
+    const container = item.side === 'left' ? leftIcons : rightIcons;
+    const el = document.createElement('div');
+    el.setAttribute('data-side-icon', '');
+    el.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;transform:translateY(10px);transition:opacity 0.8s ease,transform 0.8s ease;';
+    el.style.transitionDelay = (idx * 0.3 + 0.5) + 's';
+
+    const iconEl = document.createElement('div');
+    iconEl.className = 'side-icon-emoji';
+    iconEl.textContent = item.icon;
+    iconEl.style.cssText = 'font-size:32px;filter:drop-shadow(0 0 8px rgba(255,170,0,0.4));';
+    el.appendChild(iconEl);
+
+    const labelEl = document.createElement('div');
+    labelEl.className = 'side-icon-label';
+    labelEl.textContent = item.label;
+    labelEl.style.cssText = 'font-size:10px;color:rgba(255,200,100,0.6);font-family:monospace;letter-spacing:1px;text-align:center;text-transform:uppercase;white-space:pre-line;line-height:1.3;';
+    el.appendChild(labelEl);
+
+    const line = document.createElement('div');
+    line.style.cssText = 'width:1px;height:20px;background:rgba(255,200,100,0.15);';
+    el.appendChild(line);
+
+    container.appendChild(el);
+  });
+
+  endLogo.appendChild(leftIcons);
+  endLogo.appendChild(rightIcons);
+
+  // Scroll indicators — positioned just right of poem text
+  const scrollIndicators = document.createElement('div');
+  scrollIndicators.style.cssText = 'position:absolute;top:22%;left:50%;margin-left:300px;height:72%;display:flex;flex-direction:column;justify-content:space-between;align-items:center;pointer-events:none;opacity:0;transition:opacity 1s ease;';
+
+  const upArrow = document.createElement('div');
+  upArrow.style.cssText = 'color:rgba(255,200,100,0.4);font-size:20px;animation:scrollBounceUp 1.5s ease-in-out infinite;';
+  upArrow.textContent = '\u25B2';
+
+  const scrollLine = document.createElement('div');
+  scrollLine.style.cssText = 'flex:1;width:1px;background:linear-gradient(to bottom,rgba(255,200,100,0.3),rgba(255,200,100,0.1),rgba(255,200,100,0.3));margin:8px 0;';
+
+  const scrollLabel = document.createElement('div');
+  scrollLabel.style.cssText = 'color:rgba(255,200,100,0.3);font-size:9px;font-family:monospace;letter-spacing:2px;writing-mode:vertical-rl;text-orientation:mixed;';
+  scrollLabel.textContent = 'SCROLL';
+
+  const downArrow = document.createElement('div');
+  downArrow.style.cssText = 'color:rgba(255,200,100,0.4);font-size:20px;animation:scrollBounceDown 1.5s ease-in-out infinite;';
+  downArrow.textContent = '\u25BC';
+
+  scrollIndicators.appendChild(upArrow);
+  scrollIndicators.appendChild(scrollLine);
+  scrollIndicators.appendChild(scrollLabel);
+  scrollIndicators.appendChild(downArrow);
+  endLogo.appendChild(scrollIndicators);
+
+  // Add bounce animations
+  const bounceStyle = document.createElement('style');
+  bounceStyle.textContent = '@keyframes scrollBounceUp{0%,100%{transform:translateY(0);opacity:0.4;}50%{transform:translateY(-5px);opacity:0.8;}}@keyframes scrollBounceDown{0%,100%{transform:translateY(0);opacity:0.4;}50%{transform:translateY(5px);opacity:0.8;}}';
+  document.head.appendChild(bounceStyle);
+
+  // Scale end screen elements when accessibility font size changes
+  a11y.onFontChange((scale) => {
+    poemText.style.fontSize = (18 * scale) + 'px';
+    endLogo.querySelectorAll('[data-side-icon]').forEach(el => {
+      el.querySelector('.side-icon-emoji').style.fontSize = (32 * scale) + 'px';
+      el.querySelector('.side-icon-label').style.fontSize = (10 * scale) + 'px';
+    });
+  });
+  const poemText = document.createElement('div');
+  poemText.style.cssText = 'font-family:Georgia,\"Times New Roman\",serif;font-size:18px;color:rgba(255,200,100,0.9);line-height:2;letter-spacing:0.5px;text-shadow:0 0 15px rgba(255,170,0,0.3);white-space:pre-wrap;';
+  poemContainer.appendChild(poemText);
+  endLogo.appendChild(poemContainer);
+
   document.body.appendChild(endLogo);
+
+  const poemLines = [
+    'UltraKingdoms: Rise of the Infinite Realms',
+    '',
+    'Step into the portal where universes collide,',
+    'UltraKingdoms awakens \u2014 the Multiverse Metaverse wide!',
+    'A boundless expanse where realities entwine,',
+    'Creator-owned kingdoms, every world truly thine.',
+    '',
+    'Here everyone wins in this player-driven dream,',
+    'Open economies flow like a limitless stream.',
+    'Trade, build, and thrive \u2014 true ownership is key,',
+    'Your assets, your glory, forever set free.',
+    '',
+    'Interoperable worlds, avatars, and gear,',
+    'Carry your inventory from realm to realm without fear.',
+    'Jump between kingdoms, seamless and grand,',
+    'Your progress follows across the digital land.',
+    '',
+    'Every game genre explodes in delight \u2014',
+    'RPG quests, FPS battles that ignite,',
+    'MMO alliances in epic-scale war,',
+    'Fantasy realms, medieval castles, and more.',
+    '',
+    'Fantasy sports, live sports events so bold,',
+    'Adventures and missions in stories untold.',
+    'Every game style finds its perfect home,',
+    'Low poly charm or high poly throne,',
+    'Stunning 3D vistas or virtual worlds anew,',
+    'All rendered with power, all waiting for you.',
+    '',
+    'Cross every platform, no borders in sight \u2014',
+    'Xbox and PS5 shining so bright,',
+    'PC and Mac, Android, iOS too,',
+    'Steam and beyond \u2014 the choice belongs to you.',
+    '',
+    'From towering spires to mystical shores,',
+    'Creators and players unlock infinite doors.',
+    'UltraKingdoms unites us, the future unfurled,',
+    'A metaverse multiverse \u2014 for the dreamers of the world!',
+    '',
+    'Forge your legend, claim your crown today,',
+    'In UltraKingdoms, the multiverse is here to stay.',
+  ];
+
+  let endSequenceStarted = false;
+  let poemTypingActive = false;
+
+  function startEndSequence() {
+    if (endSequenceStarted) return;
+    endSequenceStarted = true;
+
+    // Phase 1: Logo rises to top
+    setTimeout(() => {
+      endLogoImg.style.top = '8%';
+      endLogoImg.style.maxWidth = '30%';
+      endLogoImg.style.maxHeight = '15%';
+    }, 1500);
+
+    // Phase 2: Poem starts typing
+    setTimeout(() => {
+      poemContainer.style.opacity = '1';
+      scrollIndicators.style.opacity = '1';
+      leftIcons.style.opacity = '1';
+      rightIcons.style.opacity = '1';
+      // Trigger staggered icon animations
+      leftIcons.querySelectorAll('div > div').forEach(el => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; });
+      rightIcons.querySelectorAll('div > div').forEach(el => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; });
+      poemTypingActive = true;
+      typePoem();
+    }, 3500);
+  }
+
+  function typePoem() {
+    let lineIdx = 0;
+    let charIdx = 0;
+    let currentText = '';
+
+    function typeNext() {
+      if (!poemTypingActive) return;
+      if (lineIdx >= poemLines.length) return;
+
+      const line = poemLines[lineIdx];
+
+      if (line === '') {
+        currentText += '\n\n';
+        poemText.textContent = currentText;
+        lineIdx++;
+        setTimeout(typeNext, 400);
+        return;
+      }
+
+      if (charIdx < line.length) {
+        currentText += line[charIdx];
+        poemText.textContent = currentText;
+        charIdx++;
+        // Title line types slower
+        const speed = lineIdx === 0 ? 45 : 22;
+        setTimeout(typeNext, speed);
+      } else {
+        currentText += '\n';
+        poemText.textContent = currentText;
+        lineIdx++;
+        charIdx = 0;
+        setTimeout(typeNext, 200);
+      }
+
+      // Auto-scroll poem container if content overflows
+      poemContainer.scrollTop = poemContainer.scrollHeight;
+    }
+
+    typeNext();
+  }
+
+  function resetEndSequence() {
+    endSequenceStarted = false;
+    poemTypingActive = false;
+    endLogoImg.style.top = '50%';
+    endLogoImg.style.maxWidth = '50%';
+    endLogoImg.style.maxHeight = '40%';
+    poemContainer.style.opacity = '0';
+    scrollIndicators.style.opacity = '0';
+    leftIcons.style.opacity = '0';
+    rightIcons.style.opacity = '0';
+    leftIcons.querySelectorAll('div > div').forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(10px)'; });
+    rightIcons.querySelectorAll('div > div').forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(10px)'; });
+    poemText.textContent = '';
+  }
 
   window.addEventListener('resize', () => {
     postFx.onResize();
@@ -307,9 +533,18 @@ function init() {
 
     minimap.update(cameraRail.getCurrentT());
 
-    // Show logo at last station
+    // Show logo + poem at last station, hide HUD
     const atEnd = state.currentStation === STATION_COUNT - 1 && !state.isTransitioning;
     endLogo.style.opacity = atEnd ? '1' : '0';
+    const hudLayer = document.getElementById('hud-layer');
+    hudLayer.style.opacity = atEnd ? '0' : '1';
+    hudLayer.style.pointerEvents = atEnd ? 'none' : 'auto';
+    hudLayer.style.visibility = atEnd ? 'hidden' : 'visible';
+    if (atEnd) {
+      startEndSequence();
+    } else if (endSequenceStarted) {
+      resetEndSequence();
+    }
 
     hud.update();
     postFx.updateBloom(dt);

@@ -89,7 +89,7 @@ export function createPortals(scene, spline) {
   const portalTValues = [0.09, 0.22, 0.40, 0.55, 0.70, 0.83];
 
   // Each portal gets its own video element and texture for future customization
-  const portalVideoSources = ['/overlay.mp4', '/broker.mp4', '/warden.mp4', '/overlay.mp4', '/overlay.mp4', '/overlay.mp4'];
+  const portalVideoSources = ['/overlay.mp4', '/broker.mp4', '/warden.mp4', '/navigator.mp4', '/overlay.mp4', '/overlay.mp4'];
   const portalVideos = portalTValues.map((_, i) => createPortalVideo(portalVideoSources[i]));
   const videoTextures = portalVideos.map(video => {
     const tex = new THREE.VideoTexture(video);

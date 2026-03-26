@@ -12,6 +12,7 @@ export function createAccessibilityPanel() {
     '[data-portal-modal] { font-size: calc(14px * var(--font-scale)); }',
     '[data-portal-modal] h2 { font-size: calc(20px * var(--font-scale)) !important; }',
     '[data-portal-modal] p { font-size: calc(14px * var(--font-scale)) !important; }',
+    '#end-logo { --font-scale: var(--font-scale, 1); }',
   ].join('\n');
   document.head.appendChild(scaleStyle);
 
@@ -33,6 +34,7 @@ export function createAccessibilityPanel() {
   let open = false;
   let currentFontScale = 1;
   let currentColorMode = 'normal';
+  const fontChangeCallbacks = [];
 
   // Prevent clicks on panel from closing modals/backdrops
   panel.addEventListener('click', (e) => {
@@ -80,6 +82,7 @@ export function createAccessibilityPanel() {
       state.fontScale = fs.scale;
       document.documentElement.style.fontSize = (16 * fs.scale) + 'px';
       document.documentElement.style.setProperty('--font-scale', fs.scale);
+      fontChangeCallbacks.forEach(cb => cb(fs.scale));
       fontBtns.querySelectorAll('button').forEach(b => {
         b.style.borderColor = 'rgba(0,255,255,0.3)';
         b.style.color = '#ccc';
@@ -177,6 +180,7 @@ export function createAccessibilityPanel() {
     state.fontScale = 1.0;
     document.documentElement.style.fontSize = '';
     document.documentElement.style.setProperty('--font-scale', 1);
+    fontChangeCallbacks.forEach(cb => cb(1));
     document.documentElement.style.filter = 'none';
     document.documentElement.classList.remove('reduce-motion');
     motionBtn.textContent = 'Reduce Motion: OFF';
@@ -217,5 +221,5 @@ export function createAccessibilityPanel() {
   svg.appendChild(defs);
   document.body.appendChild(svg);
 
-  return { };
+  return { onFontChange: (cb) => fontChangeCallbacks.push(cb) };
 }
