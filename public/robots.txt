@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /traditional/assets/
+Sitemap: https://ultrakingdoms.com/sitemap.xml
