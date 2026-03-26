@@ -1,7 +1,9 @@
 import { state } from '../state/gameState.js';
 
+const BASE = import.meta.env.BASE_URL;
+
 export function createAudioManager() {
-  const audio = new Audio('/theme.mp3');
+  const audio = new Audio(`${BASE}theme.mp3`);
   audio.loop = true;
   audio.volume = 0.5;
 

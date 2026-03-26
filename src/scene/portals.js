@@ -68,9 +68,11 @@ const PORTAL_COLORS = [
   new THREE.Color(0x00ffaa),
 ];
 
+const BASE = import.meta.env.BASE_URL;
+
 function createPortalVideo(src) {
   const video = document.createElement('video');
-  video.src = src || '/overlay.mp4';
+  video.src = src || `${BASE}overlay.mp4`;
   video.crossOrigin = 'anonymous';
   video.loop = true;
   video.muted = true;
@@ -89,7 +91,7 @@ export function createPortals(scene, spline) {
   const portalTValues = [0.09, 0.22, 0.40, 0.55, 0.70, 0.83];
 
   // Each portal gets its own video element and texture for future customization
-  const portalVideoSources = ['/overlay.mp4', '/broker.mp4', '/warden.mp4', '/navigator.mp4', '/overlay.mp4', '/overlay.mp4'];
+  const portalVideoSources = [`${BASE}overlay.mp4`, `${BASE}broker.mp4`, `${BASE}warden.mp4`, `${BASE}navigator.mp4`, `${BASE}overlay.mp4`, `${BASE}overlay.mp4`];
   const portalVideos = portalTValues.map((_, i) => createPortalVideo(portalVideoSources[i]));
   const videoTextures = portalVideos.map(video => {
     const tex = new THREE.VideoTexture(video);

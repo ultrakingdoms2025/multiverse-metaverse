@@ -54,7 +54,7 @@ export const NPC_DATA = [
     sections: [
       { heading: 'APPROVED PORTALS' },
       { subheading: 'The following partners have been granted passage into the multiverse', bullets: [] },
-      { image: '/partnerlogos.png' },
+      { image: `${import.meta.env.BASE_URL}partnerlogos.png` },
       { heading: 'GLOBAL SECURITY FEATURES' },
       { subheading: 'These are just the beginning', bullets: [] },
       { cards: [
@@ -71,13 +71,13 @@ export const NPC_DATA = [
     sections: [
       { heading: 'EXPLORE THE WORLDS' },
       { carousel: [
-        { name: 'World 1', logo: '/p0.webp', url: 'https://ultrakingdoms.com' },
-        { name: 'World 2', logo: '/p1.webp', url: 'https://ultrakingdoms.com' },
-        { name: 'World 3', logo: '/p2.webp', url: 'https://ultrakingdoms.com' },
-        { name: 'World 4', logo: '/p3.webp', url: 'https://ultrakingdoms.com' },
-        { name: 'World 5', logo: '/p4.webp', url: 'https://ultrakingdoms.com' },
-        { name: 'World 6', logo: '/p5.webp', url: 'https://ultrakingdoms.com' },
-        { name: 'World 7', logo: '/p6.webp', url: 'https://ultrakingdoms.com' },
+        { name: 'World 1', logo: `${import.meta.env.BASE_URL}p0.webp`, url: 'https://ultrakingdoms.com' },
+        { name: 'World 2', logo: `${import.meta.env.BASE_URL}p1.webp`, url: 'https://ultrakingdoms.com' },
+        { name: 'World 3', logo: `${import.meta.env.BASE_URL}p2.webp`, url: 'https://ultrakingdoms.com' },
+        { name: 'World 4', logo: `${import.meta.env.BASE_URL}p3.webp`, url: 'https://ultrakingdoms.com' },
+        { name: 'World 5', logo: `${import.meta.env.BASE_URL}p4.webp`, url: 'https://ultrakingdoms.com' },
+        { name: 'World 6', logo: `${import.meta.env.BASE_URL}p5.webp`, url: 'https://ultrakingdoms.com' },
+        { name: 'World 7', logo: `${import.meta.env.BASE_URL}p6.webp`, url: 'https://ultrakingdoms.com' },
       ]},
     ] },
   { name: 'The Syndicate Boss', color: new THREE.Color(0xaa00ff), hexColor: '#aa00ff', stationIndex: 4, visualType: 'faction',

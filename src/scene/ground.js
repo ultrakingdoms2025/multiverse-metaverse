@@ -41,9 +41,11 @@ const groundFrag = `
   }
 `;
 
+const BASE = import.meta.env.BASE_URL;
+
 function createVideoElement() {
   const video = document.createElement('video');
-  video.src = '/overlay.mp4';
+  video.src = `${BASE}overlay.mp4`;
   video.crossOrigin = 'anonymous';
   video.loop = true;
   video.muted = true;

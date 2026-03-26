@@ -2,12 +2,14 @@ import '../styles/hud.css';
 import { state, STATION_COUNT } from '../state/gameState.js';
 import { NPC_DATA } from '../npcs/npcData.js';
 
+const BASE = import.meta.env.BASE_URL;
+
 export function createHud(callbacks) {
   const container = document.getElementById('hud-layer');
 
   const titleDiv = document.createElement('div'); titleDiv.className = 'hud-title';
   const logoImg = document.createElement('img');
-  logoImg.src = '/uklogo.png';
+  logoImg.src = `${BASE}uklogo.png`;
   logoImg.alt = 'Ultra Kingdoms';
   logoImg.style.cssText = 'height:60px;object-fit:contain;';
   titleDiv.appendChild(logoImg); container.appendChild(titleDiv);

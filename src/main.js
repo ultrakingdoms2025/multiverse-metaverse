@@ -1,3 +1,4 @@
+const BASE = import.meta.env.BASE_URL;
 import './styles/main.css';
 import * as THREE from 'three';
 import { createScene } from './scene/createScene.js';
@@ -88,7 +89,7 @@ function init() {
   state._npcHexColors = NPC_DATA.map(n => n.hexColor);
 
   // Floor logo at the start of the road
-  const logoTexture = new THREE.TextureLoader().load('/uklogo.png');
+  const logoTexture = new THREE.TextureLoader().load(`${BASE}uklogo.png`);
   logoTexture.colorSpace = THREE.SRGBColorSpace;
   const logoMat = new THREE.ShaderMaterial({
     uniforms: { uTex: { value: logoTexture } },
@@ -165,7 +166,7 @@ function init() {
     'Emerald light pulses as the Oracle\u2019s visions unfold\u2026 the future is taking shape.',
   ];
   const portalHexColors = ['#00ffff', '#ffaa00', '#ff0044', '#4488ff', '#aa00ff', '#00ffaa'];
-  const portalVideoSources = ['/overlay.mp4', '/broker.mp4', '/warden.mp4', '/navigator.mp4', '/overlay.mp4', '/overlay.mp4'];
+  const portalVideoSources = [`${BASE}overlay.mp4`, `${BASE}broker.mp4`, `${BASE}warden.mp4`, `${BASE}navigator.mp4`, `${BASE}overlay.mp4`, `${BASE}overlay.mp4`];
 
   const portalModals = [];
   const portalVids = [];
@@ -245,7 +246,7 @@ function init() {
   endLogo.style.cssText = 'position:fixed;inset:0;z-index:12;display:flex;flex-direction:column;align-items:center;pointer-events:none;opacity:0;transition:opacity 0.8s ease;background:#000;overflow:hidden;';
 
   const endLogoImg = document.createElement('img');
-  endLogoImg.src = '/uklogo.png';
+  endLogoImg.src = `${BASE}uklogo.png`;
   endLogoImg.style.cssText = 'max-width:50%;max-height:40%;filter:drop-shadow(0 0 30px rgba(255,170,0,0.6)) drop-shadow(0 0 60px rgba(255,170,0,0.3));border-radius:8px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);transition:top 2s ease,max-width 1.5s ease,max-height 1.5s ease;';
   endLogo.appendChild(endLogoImg);
 
