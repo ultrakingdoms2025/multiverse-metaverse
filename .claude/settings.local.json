@@ -3,7 +3,12 @@
     "allow": [
       "Bash(ffprobe -v error -show_entries stream=codec_name,codec_type,width,height -of compact overlay.mp4)",
       "Bash(ffprobe -v error -show_entries stream=codec_name,codec_type,width,height -of compact broker.mp4 warden.mp4 navigator.mp4)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(git reset:*)",
+      "Bash(git rm:*)",
+      "Bash(git lfs:*)",
+      "Bash(git checkout:*)",
+      "Bash(git push:*)"
     ]
   }
 }

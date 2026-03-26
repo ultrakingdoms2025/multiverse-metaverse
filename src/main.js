@@ -143,7 +143,7 @@ function init() {
     onNext: () => cameraRail.nextStation(),
     onPrev: () => cameraRail.prevStation(),
     onGoTo: (i) => cameraRail.goToStation(i),
-    onAudioToggle: () => { audio.toggle(); hud.setAudioState(state.audioPlaying); },
+    onAudioToggle: () => { audio.toggle((playing) => hud.setAudioState(playing)); hud.setAudioState(state.audioPlaying); },
     onVolumeChange: (v) => { audio.setVolume(v); },
   });
 

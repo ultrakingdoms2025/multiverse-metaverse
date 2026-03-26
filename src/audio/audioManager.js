@@ -7,11 +7,12 @@ export function createAudioManager() {
   audio.loop = true;
   audio.volume = 0.5;
 
-  function toggle() {
+  function toggle(onStateChange) {
     if (!state.audioLoaded) {
       audio.play().then(() => {
         state.audioLoaded = true;
         state.audioPlaying = true;
+        if (onStateChange) onStateChange(true);
       }).catch(e => console.warn('Audio failed:', e));
       return;
     }
